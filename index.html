@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Follow Up — Dr. Pedro Carrijo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Supabase SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.7/umd/supabase.min.js"></script>
+<style>
+:root{
+  --verde:#3a9688;--verde-bg:#2e8070;--verde-esc:#1e6357;
+  --ouro:#C9A84C;--ouro-c:#dfc06a;
+  --card:#ffffff;--bc:rgba(201,168,76,0.3);
+  --inp:#f4f9f8;--inp-b:#b2d8d1;--texto:#1a2a27;
+  --esa-cor:#2e8070;--esa-cl:#e6f4f1;--esa-tg:#1e6357;
+  --rh-cor:#7b52a8;--rh-cl:#f0ebfa;--rh-tg:#5a3485;
+  --lip-cor:#c0544a;--lip-cl:#faeae9;--lip-tg:#942e26;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,sans-serif;background:linear-gradient(160deg,#1e6357 0%,#2e8070 40%,#3a9688 75%,#52b3a3 100%);min-height:100vh;color:var(--texto);}
+
+/* ══ TELA DE LOGIN ══ */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+}
+.login-box{
+  background:#fff;border-radius:20px;padding:40px 36px;
+  width:100%;max-width:400px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.18);
+}
+.login-logo{
+  width:56px;height:56px;background:var(--ouro);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:24px;color:#111;
+  margin:0 auto 16px;box-shadow:0 4px 16px rgba(201,168,76,0.4);
+}
+.login-title{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
+  color:var(--verde-esc);text-align:center;margin-bottom:4px;
+}
+.login-sub{font-size:12px;color:#5a7a74;text-align:center;margin-bottom:28px;letter-spacing:0.5px;}
+.login-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;display:block;margin-bottom:4px;}
+.login-input{
+  width:100%;background:var(--inp);border:1.5px solid var(--inp-b);
+  border-radius:9px;padding:11px 14px;font-family:Arial,sans-serif;
+  font-size:14px;color:var(--texto);outline:none;transition:border .15s;margin-bottom:14px;
+}
+.login-input:focus{border-color:var(--ouro);background:#fff;}
+.login-btn{
+  width:100%;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;
+  padding:13px;background:var(--verde-esc);color:#fff;border:none;
+  border-radius:9px;cursor:pointer;transition:all .15s;margin-top:4px;
+}
+.login-btn:hover{background:var(--verde-bg);}
+.login-btn:disabled{background:#b2d8d1;cursor:not-allowed;}
+.login-erro{
+  background:#faeae9;border:1px solid rgba(192,84,74,0.3);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:#942e26;
+  margin-top:12px;display:none;
+}
+.login-erro.vis{display:block;}
+.login-cfg-link{
+  font-size:11px;color:#5a7a74;text-align:center;margin-top:20px;
+  padding-top:16px;border-top:1px solid #e8f0ed;
+}
+.login-cfg-link button{
+  background:none;border:none;color:var(--verde-esc);cursor:pointer;
+  font-size:11px;font-weight:700;text-decoration:underline;
+}
+
+/* ══ MODAL FIREBASE CONFIG ══ */
+.fb-modal-ov{
+  position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:900;
+  display:none;align-items:center;justify-content:center;padding:16px;
+}
+.fb-modal-ov.open{display:flex;}
+.fb-modal{
+  background:#fff;border-radius:16px;padding:28px 30px;
+  width:100%;max-width:540px;box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  max-height:90vh;overflow-y:auto;
+}
+.fb-modal h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:8px;}
+.fb-modal p{font-size:12.5px;color:#5a7a74;line-height:1.6;margin-bottom:14px;}
+.fb-step{background:#f4f9f8;border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:12.5px;color:#1e3530;line-height:1.7;}
+.fb-step strong{color:var(--verde-esc);}
+.fb-step code{background:#e6f4f1;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:11px;color:#1e6357;}
+.fb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;display:block;margin-bottom:4px;}
+.fb-input{width:100%;background:var(--inp);border:1.5px solid var(--inp-b);border-radius:8px;padding:9px 12px;font-family:Arial,sans-serif;font-size:12px;color:var(--texto);outline:none;transition:border .15s;margin-bottom:10px;font-family:monospace;}
+.fb-input:focus{border-color:var(--ouro);}
+.fb-acts{display:flex;gap:8px;margin-top:6px;}
+
+/* ══ HEADER ══ */
+#app-screen{display:none;}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 36px;background:rgba(0,0,0,0.25);
+  border-bottom:2px solid rgba(201,168,76,0.5);
+  position:sticky;top:0;z-index:300;backdrop-filter:blur(12px);
+}
+.logo-area{display:flex;align-items:center;gap:14px;}
+.logo-icon{width:42px;height:42px;background:var(--ouro);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#111;box-shadow:0 4px 14px rgba(201,168,76,0.5);}
+.logo-text h1{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;line-height:1;}
+.logo-text p{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:14px;}
+.user-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  border-radius:99px;padding:5px 12px 5px 6px;
+}
+.user-avatar{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#111;flex-shrink:0;
+}
+.user-name{font-size:11px;color:rgba(255,255,255,0.9);font-weight:600;}
+.user-role{font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.8px;}
+.btn-sair{
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;
+  padding:6px 14px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);
+  border:1px solid rgba(255,255,255,0.2);border-radius:7px;cursor:pointer;transition:all .15s;
+}
+.btn-sair:hover{background:rgba(255,255,255,0.15);color:#fff;}
+.sync-badge{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;color:rgba(255,255,255,0.6);
+}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#ccc;flex-shrink:0;}
+.sync-dot.ok{background:#4caf50;box-shadow:0 0 5px rgba(76,175,80,0.6);}
+.sync-dot.err{background:#f44336;}
+.sync-dot.ing{background:var(--ouro);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hora{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--ouro);letter-spacing:2px;line-height:1;}
+.data-txt{font-size:9px;color:rgba(255,255,255,0.55);margin-top:1px;}
+
+main{max-width:1120px;margin:0 auto;padding:20px 32px 60px;}
+
+/* REGRAS */
+.regras-bar{background:rgba(0,0,0,0.2);border:1px solid rgba(201,168,76,0.4);border-radius:12px;padding:11px 22px;display:flex;gap:22px;flex-wrap:wrap;margin-bottom:18px;}
+.regra-item{display:flex;align-items:center;gap:10px;}
+.regra-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--ouro);line-height:1;}
+.regra-label{font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5;}
+.regra-label strong{display:block;font-size:12px;color:#fff;font-weight:700;}
+
+/* NAV */
+.nav-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.nav-btn{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.8px;padding:8px 18px;border:2px solid var(--ouro);background:transparent;color:var(--ouro);border-radius:8px;cursor:pointer;transition:all .18s;}
+.nav-btn.active{background:var(--ouro);color:#111;box-shadow:0 4px 16px rgba(201,168,76,0.4);}
+.nav-btn:hover:not(.active){background:rgba(201,168,76,0.15);}
+.sec{display:none;}.sec.active{display:block;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#fff;line-height:1;}
+.sec-sub{font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-top:4px;margin-bottom:18px;}
+
+/* PROG SELECTOR */
+.prog-sel{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.prog-btn{display:flex;align-items:center;gap:9px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:9px 18px;border-radius:10px;cursor:pointer;transition:all .18s;border:2px solid transparent;background:rgba(255,255,255,0.1);color:#fff;}
+.prog-btn:hover{background:rgba(255,255,255,0.2);}
+.prog-btn.active-esa{background:var(--esa-cl);color:var(--esa-tg);border-color:var(--esa-cor);}
+.prog-btn.active-rh{background:var(--rh-cl);color:var(--rh-tg);border-color:var(--rh-cor);}
+.prog-btn.active-lip{background:var(--lip-cl);color:var(--lip-tg);border-color:var(--lip-cor);}
+.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dot-esa{background:var(--esa-cor);}.dot-rh{background:var(--rh-cor);}.dot-lip{background:var(--lip-cor);}
+.tipo-sel{display:flex;gap:8px;margin-bottom:16px;}
+.tipo-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:7px 16px;border-radius:8px;cursor:pointer;transition:all .15s;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);}
+.tipo-btn.active{background:#fff;color:var(--verde-esc);border-color:#fff;font-weight:700;}
+
+/* TIMELINE */
+.timeline{position:relative;display:flex;flex-direction:column;}
+.timeline::before{content:'';position:absolute;left:48px;top:30px;bottom:30px;width:2px;background:linear-gradient(to bottom,var(--ouro),rgba(201,168,76,0.06));}
+.day-row{display:grid;grid-template-columns:96px 1fr;gap:0 16px;padding-bottom:14px;animation:fadeUp .35s ease both;}
+.day-row:nth-child(1){animation-delay:.04s}.day-row:nth-child(2){animation-delay:.09s}.day-row:nth-child(3){animation-delay:.14s}.day-row:nth-child(4){animation-delay:.19s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.day-marker{display:flex;flex-direction:column;align-items:center;padding-top:10px;position:relative;z-index:2;}
+.day-circle{width:48px;height:48px;background:var(--ouro);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:0 4px 14px rgba(201,168,76,0.5);}
+.day-circle span:first-child{font-family:'Bebas Neue',sans-serif;font-size:19px;color:#111;line-height:1;}
+.day-circle span:last-child{font-size:7px;font-weight:700;text-transform:uppercase;color:rgba(0,0,0,0.5);letter-spacing:1px;line-height:1;}
+.day-card{background:var(--card);border:1.5px solid var(--bc);border-radius:12px;padding:14px 18px;box-shadow:0 3px 14px rgba(0,0,0,0.1);transition:all .18s;}
+.day-card:hover{border-color:var(--ouro);box-shadow:0 7px 22px rgba(0,0,0,0.13);transform:translateX(3px);}
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.card-fase{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.8px;color:var(--verde-esc);}
+.badges{display:flex;gap:5px;}
+.badge{font-size:9px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;padding:2px 9px;border-radius:99px;}
+.b-video{background:#fff7e0;color:#8a6010;border:1px solid #e2c97a;}
+.b-texto{background:#e8f4f1;color:#1e6357;border:1px solid #9ecfc5;}
+.b-depo{background:#e8f0fa;color:#1a4a90;border:1px solid #9ab8e8;}
+.card-msg{font-size:13px;line-height:1.7;color:#1e3530;background:#f2faf8;border-left:3.5px solid var(--ouro);padding:9px 13px;border-radius:0 8px 8px 0;margin-bottom:9px;font-style:italic;}
+.card-msg.esa-msg{border-left-color:var(--esa-cor);}.card-msg.rh-msg{border-left-color:var(--rh-cor);}.card-msg.lip-msg{border-left-color:var(--lip-cor);}
+.card-tip{font-size:11px;color:#3d6b63;display:flex;align-items:flex-start;gap:5px;line-height:1.5;}
+.card-tip::before{content:'▸';color:var(--ouro);flex-shrink:0;margin-top:1px;}
+.vid-section{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(201,168,76,0.4);}
+.vid-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4a9080;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.vid-label em{background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);border-radius:99px;padding:1px 8px;font-size:9px;color:#8a6010;font-style:normal;}
+.vid-label em.sem{background:rgba(192,84,74,0.08);border-color:rgba(192,84,74,0.3);color:#942e26;}
+.vid-slots{display:flex;flex-direction:column;gap:5px;}
+.vid-slot{display:flex;align-items:center;gap:8px;background:#f8fdfb;border:1.5px solid var(--verde-esc);border-radius:8px;padding:7px 10px;}
+.vid-slot-icon{width:26px;height:26px;background:var(--verde-esc);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:#fff;}
+.vid-slot-name{flex:1;font-size:12px;font-weight:700;color:#1e3530;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vid-slot-cat{font-size:10px;color:#5a7a74;}
+.btn-cp{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:4px 10px;border-radius:6px;border:none;background:var(--verde-esc);color:#fff;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.btn-cp:hover{background:var(--verde-bg);}.btn-cp.ok{background:var(--ouro);color:#111;}
+
+/* VÍDEOS */
+.upload-area{background:var(--card);border:2px dashed rgba(201,168,76,0.5);border-radius:14px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;position:relative;}
+.upload-area:hover,.upload-area.drag{border-color:var(--ouro);background:#fffbf0;}
+.upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:3px;}
+.upload-sub{font-size:12px;color:#5a7a74;}
+.anl-bar{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.4);border-radius:10px;padding:11px 14px;margin-bottom:12px;font-size:13px;color:#8a6010;display:none;align-items:center;gap:10px;}
+.anl-bar.vis{display:flex !important;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(201,168,76,0.3);border-top-color:var(--ouro);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bib{display:flex;flex-direction:column;gap:10px;}
+.bib-card{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;padding:14px 16px;box-shadow:0 3px 12px rgba(0,0,0,0.08);animation:fadeUp .3s ease both;}
+.bib-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;}
+.bib-nome{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:var(--verde-esc);}
+.bib-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;}
+.bib-desc{font-size:12.5px;color:#1e3530;line-height:1.6;margin-bottom:10px;}
+.bib-acts{display:flex;gap:8px;align-items:center;}
+.btn-copiar{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;padding:7px 14px;background:var(--verde-esc);color:#fff;border:none;border-radius:7px;cursor:pointer;transition:all .15s;}
+.btn-copiar:hover{background:var(--verde-bg);}.btn-copiar.ok2{background:var(--ouro);color:#111;}
+.btn-remb{background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 5px;border-radius:5px;transition:all .14s;flex-shrink:0;}
+.btn-remb:hover{background:#fee;color:#c44;}
+
+/* TAGS */
+.ctag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:99px;}
+.ct-esa{background:var(--esa-cl);color:var(--esa-tg);border:1px solid rgba(46,128,112,0.3);}
+.ct-rh{background:var(--rh-cl);color:var(--rh-tg);border:1px solid rgba(123,82,168,0.3);}
+.ct-lip{background:var(--lip-cl);color:var(--lip-tg);border:1px solid rgba(192,84,74,0.3);}
+.ct-frio{background:#fce8e8;color:#9a2020;border:1px solid #e8b2b2;}
+.ct-morno{background:#fff3dc;color:#7a5008;border:1px solid #e8cf90;}
+.ct-dia{background:#e8f4f1;color:#1e6357;border:1px solid #9ecfc5;}
+.ct-hora{background:#f4f4f4;color:#555;border:1px solid #ddd;}
+
+/* REGISTRO */
+.reg-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.reg-titulo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#fff;}
+.reg-sub{font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-top:2px;}
+.reg-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+.stat-card{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:11px 12px;text-align:center;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--ouro);line-height:1;}
+.stat-label{font-size:9px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px;}
+
+/* FILTROS */
+.filtro-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.filtro-label{font-size:11px;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;}
+.filtro-btn{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:5px 12px;border-radius:99px;cursor:pointer;transition:all .14s;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);}
+.filtro-btn.active{background:#fff;color:var(--verde-esc);border-color:#fff;}
+
+.btn-gold{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:9px 18px;background:var(--ouro);color:#111;border:none;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(201,168,76,0.45);transition:all .15s;}
+.btn-gold:hover{background:var(--ouro-c);transform:translateY(-1px);}
+.btn-outline{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:9px 18px;background:transparent;color:var(--ouro);border:2px solid var(--ouro);border-radius:8px;cursor:pointer;transition:all .15s;}
+.btn-outline:hover{background:var(--ouro);color:#111;}
+.btn-outline2{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:8px 16px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:1.5px solid rgba(255,255,255,0.22);border-radius:8px;cursor:pointer;transition:all .15s;}
+.btn-outline2:hover{background:rgba(255,255,255,0.18);}
+
+/* FORM */
+.form-wrap{background:var(--card);border:2px solid var(--ouro);border-radius:14px;padding:20px 22px;margin-bottom:12px;box-shadow:0 6px 22px rgba(0,0,0,0.12);display:none;animation:fadeUp .22s ease;}
+.form-wrap.open{display:block;}
+.form-titulo{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:14px;}
+.fp-sel{display:flex;gap:8px;margin-bottom:12px;}
+.fp-btn{flex:1;padding:9px 8px;border-radius:9px;cursor:pointer;transition:all .15s;border:2px solid transparent;background:#f4f9f8;text-align:center;}
+.fp-btn .fpn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:#444;display:block;margin-top:3px;}
+.fp-btn .fps{font-size:10px;color:#888;display:block;}
+.fp-btn.sel-esa{background:var(--esa-cl);border-color:var(--esa-cor);}.fp-btn.sel-esa .fpn{color:var(--esa-tg);}
+.fp-btn.sel-rh{background:var(--rh-cl);border-color:var(--rh-cor);}.fp-btn.sel-rh .fpn{color:var(--rh-tg);}
+.fp-btn.sel-lip{background:var(--lip-cl);border-color:var(--lip-cor);}.fp-btn.sel-lip .fpn{color:var(--lip-tg);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px;}
+.fg.f1{grid-template-columns:1fr;}.fg.f3{grid-template-columns:1fr 1fr 1fr;}
+.fgroup{display:flex;flex-direction:column;gap:4px;}
+.fgroup label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;}
+.fgroup input,.fgroup select,.fgroup textarea{background:var(--inp);border:1.5px solid var(--inp-b);border-radius:8px;padding:8px 11px;font-family:Arial,sans-serif;font-size:13px;color:var(--texto);outline:none;transition:border .15s;resize:vertical;}
+.fgroup input:focus,.fgroup select:focus,.fgroup textarea:focus{border-color:var(--ouro);background:#fff;}
+.fgroup textarea{min-height:64px;}
+.form-acts{display:flex;gap:8px;margin-top:4px;}
+.btn-salvar{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 22px;background:var(--verde-esc);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:all .15s;}
+.btn-salvar:hover{background:var(--verde-bg);}
+.btn-cancel{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;padding:10px 18px;background:transparent;color:#4a7a72;border:1.5px solid #b2d8d1;border-radius:8px;cursor:pointer;}
+
+/* CARDS CONTATO */
+.lista{display:flex;flex-direction:column;gap:10px;}
+.vazio{background:rgba(255,255,255,0.1);border:1.5px dashed rgba(255,255,255,0.3);border-radius:12px;padding:26px;text-align:center;color:rgba(255,255,255,0.6);font-size:13px;}
+.c-card{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.08);animation:fadeUp .28s ease both;}
+.c-card-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 9px;border-bottom:1px solid #e8f0ed;}
+.c-nome{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:var(--verde-esc);}
+.c-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px;}
+.c-card-bd{padding:11px 16px;}
+.c-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 12px;}
+.cfl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4a9080;margin-bottom:2px;}
+.cfv{font-size:12px;color:#1e3530;font-weight:500;line-height:1.45;}
+.c-obs{margin-top:9px;padding-top:9px;border-top:1px solid #dbeee9;}
+.c-obs-v{font-size:12px;color:#1e3530;line-height:1.6;background:#f2faf8;padding:7px 10px;border-radius:7px;border-left:3px solid var(--ouro);}
+.btn-rem{background:none;border:none;cursor:pointer;color:#ccc;font-size:14px;padding:2px 5px;border-radius:5px;transition:all .14s;flex-shrink:0;}
+.btn-rem:hover{background:#fee;color:#c44;}
+
+/* CHECKLIST */
+.chk-sec{margin-top:18px;}
+.chk-wrap{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;padding:16px 18px;box-shadow:0 3px 14px rgba(0,0,0,0.09);}
+.chk-tit{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:9px;}
+.chk-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.chk-item{background:#f8fdfc;border:1.5px solid #d0e8e2;border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all .14s;user-select:none;}
+.chk-item:hover{border-color:var(--ouro);}
+.chk-box{width:19px;height:19px;border:2px solid var(--ouro);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .14s;}
+.chk-item.done .chk-box{background:var(--ouro);}
+.chk-item.done .chk-box::after{content:'✓';color:#111;font-size:11px;font-weight:700;}
+.chk-item.done .chk-txt{color:#aaa;text-decoration:line-through;}
+.chk-txt{font-size:11.5px;color:#1e3530;line-height:1.4;font-weight:600;}
+
+/* HISTÓRICO */
+.hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.hist-card{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,0.08);margin-bottom:8px;}
+.hist-date{background:#f2faf8;padding:9px 16px;border-bottom:1px solid #e0ece8;display:flex;align-items:center;justify-content:space-between;}
+.hist-date-txt{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:var(--verde-esc);}
+.hist-date-meta{font-size:11px;color:#5a7a74;}
+.hist-rows{padding:10px 16px;display:flex;flex-direction:column;gap:7px;}
+.hist-row{display:grid;grid-template-columns:1fr 100px 130px 140px;gap:8px;align-items:center;font-size:12px;padding:5px 0;border-bottom:1px solid #f0f8f5;}
+.hist-row:last-child{border-bottom:none;}
+.hist-nome{font-weight:700;color:#1e3530;}
+.hist-prog{color:#5a7a74;font-size:11px;}
+.hist-status{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:99px;text-align:center;}
+.hs-ok{background:#c8e6c9;color:#1b5e20;}
+.hs-wait{background:#fff3dc;color:#7a5008;}
+.hs-no{background:#fce8e8;color:#9a2020;}
+.hs-out{background:#f4f4f4;color:#555;}
+
+/* ADMIN */
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.admin-card{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;padding:18px 20px;box-shadow:0 3px 12px rgba(0,0,0,0.08);}
+.admin-card-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:4px;}
+.admin-card-sub{font-size:11px;color:#5a7a74;margin-bottom:14px;line-height:1.5;}
+.user-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #e8f0ed;}
+.user-row:last-child{border-bottom:none;}
+.u-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#111;flex-shrink:0;}
+.u-info{flex:1;min-width:0;}
+.u-name{font-size:13px;font-weight:700;color:#1e3530;}
+.u-email{font-size:11px;color:#5a7a74;}
+.u-role{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:99px;}
+.r-admin{background:#fff7e0;color:#8a6010;border:1px solid #e2c97a;}
+.r-user{background:#e8f4f1;color:#1e6357;border:1px solid #9ecfc5;}
+
+footer{text-align:center;padding:16px;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;}
+
+/* ══ FUNIL KANBAN ══ */
+.funil-wrap{overflow-x:auto;padding-bottom:16px;}
+.kanban{display:flex;gap:12px;min-width:max-content;padding:4px 0;}
+.k-col{width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:0;}
+.k-header{border-radius:10px 10px 0 0;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;}
+.k-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#fff;}
+.k-count{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;opacity:0.85;}
+.k-body{background:rgba(255,255,255,0.07);border-radius:0 0 10px 10px;padding:8px;min-height:120px;display:flex;flex-direction:column;gap:6px;}
+.k-card{background:var(--card);border-radius:9px;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;transition:all .15s;border-left:3px solid transparent;}
+.k-card:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(0,0,0,0.15);}
+.k-card-nome{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:var(--verde-esc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.k-card-prog{font-size:10px;color:#5a7a74;margin-top:2px;}
+.k-card-hora{font-size:9px;color:#aaa;margin-top:3px;}
+.k-card-obs{font-size:10px;color:#888;margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.k-vazio{font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:14px 0;font-style:italic;}
+.k-drag-over{background:rgba(255,255,255,0.15);}
+/* Cores das colunas */
+.kc-1{background:linear-gradient(135deg,#1e6357,#2e8070);}
+.kc-2{background:linear-gradient(135deg,#2e6b8c,#3a87b0);}
+.kc-3{background:linear-gradient(135deg,#6b4e8c,#8a65b0);}
+.kc-4{background:linear-gradient(135deg,#c9a84c,#dfc06a);}
+.kc-5{background:linear-gradient(135deg,#2e8c5a,#3ab07a);}
+.kc-6{background:linear-gradient(135deg,#8c5a2e,#b07a3a);}
+.kc-7{background:linear-gradient(135deg,#8c2e2e,#b04040);}
+.kc-8{background:linear-gradient(135deg,#4a4a8c,#6060b0);}
+/* Modal de card */
+.card-modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:700;display:none;align-items:center;justify-content:center;padding:16px;}
+.card-modal-ov.open{display:flex;}
+.card-modal{background:#fff;border-radius:16px;padding:26px 28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;}
+.card-modal h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:14px;}
+.cm-field{margin-bottom:12px;}
+.cm-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;margin-bottom:4px;display:block;}
+.cm-val{font-size:13px;color:#1e3530;line-height:1.6;}
+.cm-select{width:100%;background:var(--inp);border:1.5px solid var(--inp-b);border-radius:8px;padding:8px 11px;font-family:Arial,sans-serif;font-size:13px;color:var(--texto);outline:none;margin-bottom:4px;}
+.cm-select:focus{border-color:var(--ouro);}
+.cm-acts{display:flex;gap:8px;margin-top:16px;}
+
+/* ══ PÓS-CONSULTA ══ */
+.pos-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.pos-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.pos-seq-sel{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.pos-seq-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .15s;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);}
+.pos-seq-btn.active{background:#fff;color:var(--verde-esc);border-color:#fff;font-weight:700;}
+.pos-form-wrap{background:var(--card);border:2px solid var(--ouro);border-radius:14px;padding:20px 22px;margin-bottom:14px;box-shadow:0 6px 22px rgba(0,0,0,0.12);display:none;animation:fadeUp .22s ease;}
+.pos-form-wrap.open{display:block;}
+.pos-lista{display:flex;flex-direction:column;gap:10px;}
+.pos-card{background:var(--card);border:1.5px solid var(--bc);border-radius:13px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,0.08);}
+.pos-card-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 9px;border-bottom:1px solid #e8f0ed;}
+.pos-seq-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:99px;}
+.ps-7d{background:#e8f4f1;color:#1e6357;border:1px solid #9ecfc5;}
+.ps-30d{background:#fff7e0;color:#8a6010;border:1px solid #e2c97a;}
+.ps-60d{background:#f0ebfa;color:#5a3485;border:1px solid #b8a0e0;}
+.ps-reativ{background:#faeae9;color:#942e26;border:1px solid #e8b2b2;}
+
+@media(max-width:700px){
+  main{padding:12px 12px 40px;}header{padding:10px 14px;}
+  .nav-tabs,.prog-sel,.tipo-sel,.fp-sel{flex-wrap:wrap;}
+  .chk-grid,.c-fields,.fg.f3,.stats-bar,.admin-grid{grid-template-columns:1fr 1fr;}
+  .fg{grid-template-columns:1fr;}
+  .hist-row{grid-template-columns:1fr 1fr;}
+  .timeline::before{left:40px;}
+  .day-row{grid-template-columns:80px 1fr;gap:0 10px;}
+  .day-circle{width:42px;height:42px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ TELA DE LOGIN ════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">PC</div>
+    <div class="login-title">Dr. Pedro Carrijo</div>
+    <div class="login-sub">Sistema de Follow Up · Acesso restrito</div>
+
+    <label class="login-label">E-mail</label>
+    <input class="login-input" type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+
+    <label class="login-label">Senha</label>
+    <input class="login-input" type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+
+    <button class="login-btn" id="login-btn" onclick="fazerLogin()">Entrar</button>
+
+    <div class="login-erro" id="login-erro"></div>
+
+
+  </div>
+</div>
+
+<!-- ════════ MODAL FIREBASE CONFIG ════════ -->
+<div class="fb-modal-ov" id="fb-modal">
+  <div class="fb-modal">
+    <h2>⚡ Configurar Supabase</h2>
+    <p>Cole as credenciais do seu projeto Supabase. Feito <strong>uma única vez</strong> em cada dispositivo.</p>
+
+    <div class="fb-step">
+      <strong>Como obter as credenciais:</strong><br>
+      1. Acesse <code>supabase.com</code> → seu projeto<br>
+      2. Menu lateral: <code>Project Settings</code> → <code>API</code><br>
+      3. Copie a <strong>Project URL</strong> e a <strong>anon public key</strong><br>
+      4. Certifique-se que as tabelas estão criadas (veja o guia na aba Admin)
+    </div>
+
+    <label class="fb-label">Project URL</label>
+    <input class="fb-input" id="fb-url" placeholder="https://xxxxxxxxxxx.supabase.co">
+
+    <label class="fb-label">Anon Public Key</label>
+    <input class="fb-input" id="fb-anonkey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+
+    <div class="fb-acts">
+      <button class="btn-salvar" onclick="salvarSBConfig()">Salvar e Conectar</button>
+      <button class="btn-cancel" onclick="fecharFBModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ APP PRINCIPAL ════════ -->
+<div id="app-screen">
+
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">PC</div>
+    <div class="logo-text"><h1>Dr. Pedro Carrijo</h1><p>Sistema de Follow Up</p></div>
+  </div>
+  <div class="header-right">
+    <div class="sync-badge"><span class="sync-dot" id="sdot"></span><span id="stxt">Conectando...</span></div>
+    <div class="user-badge">
+      <div class="user-avatar" id="u-avatar" style="background:var(--ouro);">?</div>
+      <div><div class="user-name" id="u-name">—</div><div class="user-role" id="u-role">—</div></div>
+    </div>
+    <div><div class="hora" id="hora">--:--</div><div class="data-txt" id="datah">—</div></div>
+    <button class="btn-sair" onclick="sair()">Sair</button>
+  </div>
+</header>
+
+<main>
+  <div class="regras-bar">
+    <div class="regra-item"><div class="regra-num">7</div><div class="regra-label"><strong>Dias por sequência</strong>Todos os programas</div></div>
+    <div class="regra-item"><div class="regra-num">4</div><div class="regra-label"><strong>Contatos por lead</strong>Nunca ultrapassar</div></div>
+    <div class="regra-item"><div class="regra-num">1ª</div><div class="regra-label"><strong>Msg sempre é pergunta</strong>Identificar dor antes</div></div>
+    <div class="regra-item"><div class="regra-num">0</div><div class="regra-label"><strong>Preço no follow up</strong>Só na consulta</div></div>
+    <div class="regra-item"><div class="regra-num">3</div><div class="regra-label"><strong>Programas</strong>ESA · RH · Lipedema</div></div>
+  </div>
+
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-btn active" onclick="showNav('guia',this)">📋 Mensagens</button>
+    <button class="nav-btn" onclick="showNav('videos',this)">🎬 Vídeos</button>
+    <button class="nav-btn" onclick="showNav('registro',this)">✏️ Registro</button>
+    <button class="nav-btn" id="nav-historico" onclick="showNav('historico',this)">📊 Histórico</button>
+    <button class="nav-btn" id="nav-funil" onclick="showNav('funil',this)">🎯 Funil</button>
+    <button class="nav-btn" id="nav-pos" onclick="showNav('pos',this)">🩺 Pós-Consulta</button>
+    <button class="nav-btn" id="nav-admin" style="display:none" onclick="showNav('admin',this)">⚙️ Admin</button>
+  </div>
+
+  <!-- ── MENSAGENS ── -->
+  <div class="sec active" id="sec-guia">
+    <div class="sec-title">Guia de Mensagens</div>
+    <div class="sec-sub">Selecione o programa e tipo de lead</div>
+    <div class="prog-sel">
+      <button class="prog-btn active-esa" onclick="setProg('esa',this)"><span class="pdot dot-esa"></span>ESA — Emagrecimento</button>
+      <button class="prog-btn" onclick="setProg('rh',this)"><span class="pdot dot-rh"></span>Reposição Hormonal</button>
+      <button class="prog-btn" onclick="setProg('lip',this)"><span class="pdot dot-lip"></span>Lipedema Scan</button>
+    </div>
+    <div class="tipo-sel">
+      <button class="tipo-btn active" onclick="setTipo('frio',this)">🔴 Lead Frio</button>
+      <button class="tipo-btn" onclick="setTipo('morno',this)">🟡 Lead Morno</button>
+    </div>
+    <div class="timeline" id="tl"></div>
+  </div>
+
+  <!-- ── VÍDEOS ── -->
+  <div class="sec" id="sec-videos">
+    <div class="sec-title">Biblioteca de Vídeos</div>
+    <div class="sec-sub">Upload · IA classifica · Copie para enviar no WhatsApp</div>
+    <div class="upload-area" id="up-area">
+      <input type="file" accept="video/*,audio/*" multiple onchange="handleUpload(this.files)">
+      <div style="font-size:32px;margin-bottom:7px;">🎬</div>
+      <div class="upload-title">Arraste vídeos ou clique para selecionar</div>
+      <div class="upload-sub">A IA classifica por programa e dia da sequência</div>
+    </div>
+    <div class="anl-bar" id="anl-bar"><span class="spinner"></span><span id="anl-txt">Analisando...</span></div>
+    <div class="bib" id="bib"><div class="vazio" id="bib-vazio">Nenhum vídeo cadastrado ainda.</div></div>
+  </div>
+
+  <!-- ── REGISTRO ── -->
+  <div class="sec" id="sec-registro">
+    <div class="reg-header">
+      <div><div class="reg-titulo">Registro do Dia</div><div class="reg-sub">Salvo em tempo real no Supabase · Visível para todos os usuários</div></div>
+      <div class="reg-acts">
+        <button class="btn-gold" onclick="abrirForm()">+ Novo Contato</button>
+        <button class="btn-outline" onclick="gerarPDF()">⬇ PDF de Hoje</button>
+        <button class="btn-outline2" onclick="exportarCSV()">📊 CSV</button>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-num" id="st-total">0</div><div class="stat-label">Total hoje</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-esa">0</div><div class="stat-label">ESA</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-rh">0</div><div class="stat-label">RH</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-lip">0</div><div class="stat-label">Lipedema</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-agd">0</div><div class="stat-label">Agendados</div></div>
+    </div>
+    <div class="filtro-bar">
+      <span class="filtro-label">Filtrar:</span>
+      <button class="filtro-btn active" onclick="setFiltro('todos',this)">Todos</button>
+      <button class="filtro-btn" onclick="setFiltro('esa',this)">ESA</button>
+      <button class="filtro-btn" onclick="setFiltro('rh',this)">RH</button>
+      <button class="filtro-btn" onclick="setFiltro('lip',this)">Lipedema</button>
+      <button class="filtro-btn" onclick="setFiltro('frio',this)">Frios</button>
+      <button class="filtro-btn" onclick="setFiltro('morno',this)">Mornos</button>
+    </div>
+    <div class="form-wrap" id="form-wrap">
+      <div class="form-titulo">Novo Registro de Contato</div>
+      <div class="fp-sel" id="fp-sel">
+        <div class="fp-btn sel-esa" onclick="setFP('esa',this)"><span style="font-size:18px">💚</span><span class="fpn">ESA</span><span class="fps">Emagrecimento</span></div>
+        <div class="fp-btn" onclick="setFP('rh',this)"><span style="font-size:18px">💜</span><span class="fpn">Reposição Hormonal</span><span class="fps">Homens e Mulheres</span></div>
+        <div class="fp-btn" onclick="setFP('lip',this)"><span style="font-size:18px">🩷</span><span class="fpn">Lipedema Scan</span><span class="fps">Diagnóstico</span></div>
+      </div>
+      <div class="fg">
+        <div class="fgroup"><label>Nome do Lead</label><input type="text" id="f-nome" placeholder="Ex: Maria Silva"></div>
+        <div class="fgroup"><label>WhatsApp</label><input type="text" id="f-fone" placeholder="Ex: (11) 99999-0000"></div>
+      </div>
+      <div class="fg f3">
+        <div class="fgroup"><label>Tipo de Lead</label><select id="f-tipo"><option value="">Selecionar...</option><option value="Frio — Anúncio">Frio — Anúncio</option><option value="Morno — Banco de Dados">Morno — Banco de Dados</option></select></div>
+        <div class="fgroup"><label>Dia da Sequência</label><select id="f-dia"><option value="">Selecionar...</option><option value="Dia 1 — Qualificação">Dia 1 — Qualificação</option><option value="Dia 2 — Vídeo Educativo">Dia 2 — Vídeo Educativo</option><option value="Dia 3 — Novidade">Dia 3 — Novidade</option><option value="Dia 4 — Depoimento">Dia 4 — Depoimento</option><option value="Dia 5 — Prova Social">Dia 5 — Prova Social</option><option value="Dia 7 — Convite">Dia 7 — Convite</option></select></div>
+        <div class="fgroup"><label>Status</label><select id="f-status"><option value="">Selecionar...</option><option value="Mensagem enviada — aguardando">Mensagem enviada</option><option value="Respondeu — seguir sequência">Respondeu</option><option value="Agendamento confirmado ✓">Agendamento ✓</option><option value="Não respondeu">Não respondeu</option><option value="Desistiu / Sem interesse">Desistiu</option></select></div>
+      </div>
+      <div class="fg">
+        <div class="fgroup"><label>Dor / Motivo</label><select id="f-dor"><option value="">Selecionar...</option><optgroup label="ESA"><option value="Estética / Aparência">Estética / Aparência</option><option value="Saúde / Exames alterados">Saúde / Exames</option><option value="Disposição / Energia">Disposição / Energia</option></optgroup><optgroup label="Reposição Hormonal"><option value="RH — Cansaço / Libido">Cansaço / Libido</option><option value="RH — Ganho de peso hormonal">Ganho de peso hormonal</option><option value="RH — Menopausa / Andropausa">Menopausa / Andropausa</option></optgroup><optgroup label="Lipedema Scan"><option value="Lipedema — Dor nas pernas">Dor nas pernas</option><option value="Lipedema — Inchaço / Diagnóstico">Inchaço / Diagnóstico</option><option value="Lipedema — Já diagnosticada">Já diagnosticada</option></optgroup></select></div>
+        <div class="fgroup"><label>Observações</label><textarea id="f-obs" placeholder="Reação do lead, próximos passos..."></textarea></div>
+      </div>
+      <div class="form-acts"><button class="btn-salvar" onclick="salvarContato()">Salvar Contato</button><button class="btn-cancel" onclick="fecharForm()">Cancelar</button></div>
+    </div>
+    <div class="lista" id="lista"><div class="vazio" id="vazio">Nenhum contato hoje ainda. Clique em <strong>+ Novo Contato</strong>.</div></div>
+    <div class="chk-sec" id="chk-sec" style="display:none;">
+      <div class="chk-wrap">
+        <div class="chk-tit">✅ Checklist do dia</div>
+        <div class="chk-grid" id="chk-grid"></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e0ece8;"><div class="chk-tit">Tarefas fixas</div><div class="chk-grid" id="chk-fixo"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HISTÓRICO ── -->
+  <div class="sec" id="sec-historico">
+    <div class="hist-header">
+      <div><div class="sec-title">Histórico Completo</div><div class="sec-sub">Todos os contatos registrados em tempo real</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-gold" onclick="exportarCSV()">📊 Exportar CSV</button>
+        <button class="btn-outline" onclick="gerarPDFHistorico()" style="font-size:13px;padding:8px 16px;">⬇ PDF Histórico</button>
+      </div>
+    </div>
+    <div class="stats-bar" style="margin-bottom:18px;">
+      <div class="stat-card"><div class="stat-num" id="ht-total">0</div><div class="stat-label">Total geral</div></div>
+      <div class="stat-card"><div class="stat-num" id="ht-esa">0</div><div class="stat-label">ESA</div></div>
+      <div class="stat-card"><div class="stat-num" id="ht-rh">0</div><div class="stat-label">RH</div></div>
+      <div class="stat-card"><div class="stat-num" id="ht-lip">0</div><div class="stat-label">Lipedema</div></div>
+      <div class="stat-card"><div class="stat-num" id="ht-agd">0</div><div class="stat-label">Agendamentos</div></div>
+    </div>
+    <div id="hist-lista"><div class="vazio">Carregando histórico...</div></div>
+  </div>
+
+  <!-- ── ADMIN ── -->
+  <div class="sec" id="sec-admin">
+    <div class="sec-title">Administração</div>
+    <div class="sec-sub">Gerencie usuários e configurações do sistema</div>
+    <div class="admin-grid">
+      <div class="admin-card">
+        <div class="admin-card-title">Usuários Cadastrados</div>
+        <div class="admin-card-sub">Todos com acesso completo ao sistema</div>
+        <div id="users-list">
+          <div class="user-row">
+            <div class="u-avatar" style="background:#fff7e0;">👤</div>
+            <div class="u-info"><div class="u-name">Carregando...</div></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid #e8f0ed;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;margin-bottom:8px;">Adicionar novo usuário</div>
+          <div class="fg f1" style="margin-bottom:8px;">
+            <div class="fgroup"><label>Nome</label><input type="text" id="new-nome" placeholder="Ex: Dr. Pedro"></div>
+          </div>
+          <div class="fg" style="margin-bottom:8px;">
+            <div class="fgroup"><label>E-mail</label><input type="email" id="new-email" placeholder="email@exemplo.com"></div>
+            <div class="fgroup"><label>Senha inicial</label><input type="password" id="new-senha" placeholder="Mínimo 6 caracteres"></div>
+          </div>
+          <button class="btn-salvar" style="font-size:13px;padding:9px 18px;" onclick="criarUsuario()">Criar Usuário</button>
+          <div id="admin-msg" style="font-size:12px;margin-top:8px;color:#1e6357;display:none;"></div>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Configurações</div>
+        <div class="admin-card-sub">Análise de vídeo por IA e dados do sistema</div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;margin-bottom:6px;">Chave de IA (análise de vídeos)</div>
+        <input type="password" id="ia-key-input" placeholder="sk-ant-..." style="width:100%;background:var(--inp);border:1.5px solid var(--inp-b);border-radius:8px;padding:8px 11px;font-family:monospace;font-size:12px;color:var(--texto);outline:none;margin-bottom:8px;">
+        <button class="btn-salvar" style="font-size:13px;padding:9px 18px;" onclick="salvarIAKey()">Salvar Chave IA</button>
+        <div id="ia-status" style="font-size:11px;color:#5a7a74;margin-top:8px;"></div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e8f0ed;">
+          <button class="btn-outline2" onclick="confirmarLimpar()" style="width:100%;color:#942e26;border-color:rgba(192,84,74,0.4);">🗑 Limpar todos os dados</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FUNIL KANBAN ══ -->
+  <div class="sec" id="sec-funil">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="sec-title">Funil de Leads</div>
+        <div class="sec-sub">Arraste os cards entre as colunas · Visualização em tempo real</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-gold" onclick="abrirFunilForm()">+ Novo Lead</button>
+      </div>
+    </div>
+
+    <!-- Form novo lead no funil -->
+    <div class="form-wrap" id="funil-form-wrap" style="margin-bottom:16px;">
+      <div class="form-titulo">Novo Lead no Funil</div>
+      <div class="fp-sel" id="ff-prog-sel">
+        <div class="fp-btn sel-esa" onclick="setFFP('esa',this)"><span style="font-size:18px">💚</span><span class="fpn">ESA</span><span class="fps">Emagrecimento</span></div>
+        <div class="fp-btn" onclick="setFFP('rh',this)"><span style="font-size:18px">💜</span><span class="fpn">Reposição Hormonal</span><span class="fps">Homens e Mulheres</span></div>
+        <div class="fp-btn" onclick="setFFP('lip',this)"><span style="font-size:18px">🩷</span><span class="fpn">Lipedema Scan</span><span class="fps">Diagnóstico</span></div>
+      </div>
+      <div class="fg">
+        <div class="fgroup"><label>Nome do Lead</label><input type="text" id="ff-nome" placeholder="Ex: Maria Silva"></div>
+        <div class="fgroup"><label>WhatsApp</label><input type="text" id="ff-fone" placeholder="Ex: (11) 99999-0000"></div>
+      </div>
+      <div class="fg">
+        <div class="fgroup"><label>Tipo de Lead</label><select id="ff-tipo"><option value="">Selecionar...</option><option value="Frio — Anúncio">Frio — Anúncio</option><option value="Morno — Banco de Dados">Morno — Banco de Dados</option></select></div>
+        <div class="fgroup"><label>Observação inicial</label><input type="text" id="ff-obs" placeholder="Ex: Veio pelo Instagram, interesse em RH"></div>
+      </div>
+      <div class="form-acts">
+        <button class="btn-salvar" onclick="salvarFunil()">Adicionar ao Funil</button>
+        <button class="btn-cancel" onclick="fecharFunilForm()">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- Kanban -->
+    <div class="funil-wrap">
+      <div class="kanban" id="kanban"></div>
+    </div>
+  </div>
+
+  <!-- Modal de detalhes do card -->
+  <div class="card-modal-ov" id="card-modal">
+    <div class="card-modal">
+      <h3 id="cm-nome">—</h3>
+      <div class="cm-field"><span class="cm-label">Programa</span><div class="cm-val" id="cm-prog">—</div></div>
+      <div class="cm-field"><span class="cm-label">WhatsApp</span><div class="cm-val" id="cm-fone">—</div></div>
+      <div class="cm-field"><span class="cm-label">Tipo de Lead</span><div class="cm-val" id="cm-tipo">—</div></div>
+      <div class="cm-field"><span class="cm-label">Mover para coluna</span>
+        <select class="cm-select" id="cm-col-sel">
+          <option value="1">1 — Lead Novo</option>
+          <option value="2">2 — Em Conversa</option>
+          <option value="3">3 — Interessado</option>
+          <option value="4">4 — Agendado</option>
+          <option value="5">5 — Compareceu</option>
+          <option value="6">6 — Pós-Consulta</option>
+          <option value="7">7 — Precisa Retorno</option>
+          <option value="8">8 — Reativação</option>
+        </select>
+      </div>
+      <div class="cm-field"><span class="cm-label">Observações</span><textarea class="cm-select" id="cm-obs-input" rows="3" placeholder="Atualize as observações..."></textarea></div>
+      <div class="cm-acts">
+        <button class="btn-salvar" onclick="salvarMoverCard()">Salvar</button>
+        <button class="btn-cancel" onclick="fecharCardModal()">Fechar</button>
+        <button style="margin-left:auto;background:none;border:1px solid #e8b2b2;border-radius:7px;padding:8px 14px;font-size:12px;color:#942e26;cursor:pointer;" onclick="removerCard()">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PÓS-CONSULTA ══ -->
+  <div class="sec" id="sec-pos">
+    <div class="pos-header">
+      <div>
+        <div class="sec-title">Pós-Consulta</div>
+        <div class="sec-sub">Sequência de acompanhamento para quem já consultou · Retenção e reativação</div>
+      </div>
+      <button class="btn-gold" onclick="abrirPosForm()">+ Registrar Paciente</button>
+    </div>
+
+    <div class="pos-stats">
+      <div class="stat-card"><div class="stat-num" id="ps-total">0</div><div class="stat-label">Total acompanhando</div></div>
+      <div class="stat-card"><div class="stat-num" id="ps-7d">0</div><div class="stat-label">Contato 7 dias</div></div>
+      <div class="stat-card"><div class="stat-num" id="ps-30d">0</div><div class="stat-label">Retorno 30 dias</div></div>
+      <div class="stat-card"><div class="stat-num" id="ps-reativ">0</div><div class="stat-label">Reativação</div></div>
+    </div>
+
+    <!-- Sequências pós-consulta -->
+    <div class="pos-seq-sel">
+      <button class="pos-seq-btn active" onclick="setPosSeq('todas',this)">Todas</button>
+      <button class="pos-seq-btn" onclick="setPosSeq('7d',this)">🟢 7 dias após consulta</button>
+      <button class="pos-seq-btn" onclick="setPosSeq('30d',this)">🟡 30 dias — retorno</button>
+      <button class="pos-seq-btn" onclick="setPosSeq('60d',this)">🟠 60 dias — lembrete</button>
+      <button class="pos-seq-btn" onclick="setPosSeq('reativ',this)">🔴 Reativação</button>
+    </div>
+
+    <!-- Guia de mensagens pós-consulta -->
+    <div style="background:var(--card);border:1.5px solid var(--bc);border-radius:13px;padding:16px 20px;margin-bottom:16px;box-shadow:0 3px 12px rgba(0,0,0,0.08);">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--verde-esc);margin-bottom:12px;">📋 Mensagens Prontas por Momento</div>
+      <div id="pos-msgs-area"></div>
+    </div>
+
+    <!-- Form novo paciente pós-consulta -->
+    <div class="pos-form-wrap" id="pos-form-wrap">
+      <div class="form-titulo">Registrar Paciente no Pós-Consulta</div>
+      <div class="fg">
+        <div class="fgroup"><label>Nome do Paciente</label><input type="text" id="pf-nome" placeholder="Ex: Maria Silva"></div>
+        <div class="fgroup"><label>WhatsApp</label><input type="text" id="pf-fone" placeholder="Ex: (11) 99999-0000"></div>
+      </div>
+      <div class="fg">
+        <div class="fgroup"><label>Data da Primeira Consulta</label><input type="date" id="pf-data"></div>
+        <div class="fgroup"><label>Programa</label><select id="pf-prog"><option value="esa">ESA — Emagrecimento</option><option value="rh">Reposição Hormonal</option><option value="lip">Lipedema Scan</option></select></div>
+      </div>
+      <div class="fg f1">
+        <div class="fgroup"><label>Observações da consulta</label><textarea id="pf-obs" placeholder="Como foi a consulta, plano definido, medicamentos..."></textarea></div>
+      </div>
+      <div class="form-acts">
+        <button class="btn-salvar" onclick="salvarPosPaciente()">Registrar</button>
+        <button class="btn-cancel" onclick="fecharPosForm()">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="pos-lista" id="pos-lista">
+      <div class="vazio" id="pos-vazio">Nenhum paciente no pós-consulta ainda. Registre quem já consultou para acompanhar.</div>
+    </div>
+  </div>
+
+
+</main>
+<footer>Dr. Pedro Carrijo · Método ESA · Reposição Hormonal · Lipedema Scan · Sincronizado via Supabase</footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// SUPABASE CONFIG & INIT
+// ══════════════════════════════════════════════
+var SB_CFG_KEY = 'drpedro_sb_config';
+var currentUser, currentUserData;
+var contatosCache = [];
+
+// Inicializar Supabase imediatamente
+var sb = supabase.createClient('https://vmxrxabhgefouzpvalad.supabase.com', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZteHJ4YWJoZ2Vmb3V6cHZhbGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3Njc3NzYsImV4cCI6MjA5NDM0Mzc3Nn0.vw9Mn87OojbsANyxghAPwkX-Z7QCjwd7g7xiENbLAqM');
+localStorage.setItem(SB_CFG_KEY, JSON.stringify({url:'https://vmxrxabhgefouzpvalad.supabase.com',anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZteHJ4YWJoZ2Vmb3V6cHZhbGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3Njc3NzYsImV4cCI6MjA5NDM0Mzc3Nn0.vw9Mn87OojbsANyxghAPwkX-Z7QCjwd7g7xiENbLAqM'}));
+
+function getSBConfig(){
+  try{ return JSON.parse(localStorage.getItem(SB_CFG_KEY)||'null'); }catch(e){ return null; }
+}
+function saveSBConfig(c){ localStorage.setItem(SB_CFG_KEY, JSON.stringify(c)); }
+
+function initSupabase(cfg){
+  try{
+    if(cfg && cfg.url && cfg.anonKey){
+      sb = supabase.createClient(cfg.url, cfg.anonKey);
+    }
+    setSS('ok','Supabase conectado');
+    sb.auth.getSession().then(function(res){
+      var session = res.data && res.data.session;
+      if(session && session.user){ currentUser=session.user; carregarPerfil(session.user.id); }
+      else{ mostrarLogin(); }
+    });
+    sb.auth.onAuthStateChange(function(event, session){
+      if(event==='SIGNED_IN' && session){ currentUser=session.user; carregarPerfil(session.user.id); }
+      else if(event==='SIGNED_OUT'){ mostrarLogin(); }
+    });
+  } catch(e){ console.error('initSupabase erro:', e); setSS('err','Erro ao conectar'); mostrarLogin(); }
+}
+
+function carregarPerfil(uid){
+  sb.from('usuarios').select('*').eq('id', uid).single()
+    .then(function(res){
+      currentUserData = res.data || {nome: currentUser.email.split('@')[0], role:'user'};
+      mostrarApp();
+    }).catch(function(){
+      currentUserData = {nome: currentUser.email.split('@')[0], role:'user'};
+      mostrarApp();
+    });
+}
+
+function abrirFBModal(){
+  document.getElementById('fb-modal').classList.add('open');
+  var cfg=getSBConfig();
+  if(cfg){ document.getElementById('fb-url').value=cfg.url||''; document.getElementById('fb-anonkey').value=cfg.anonKey||''; }
+}
+function fecharFBModal(){ document.getElementById('fb-modal').classList.remove('open'); }
+function salvarSBConfig(){
+  var url=document.getElementById('fb-url').value.trim();
+  var anonKey=document.getElementById('fb-anonkey').value.trim();
+  if(!url||!anonKey){ alert('Preencha a URL e a Anon Key.'); return; }
+  saveSBConfig({url:url, anonKey:anonKey});
+  fecharFBModal();
+  initSupabase({url:url, anonKey:anonKey});
+}
+
+
+// ══════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ══════════════════════════════════════════════
+function fazerLogin(){
+  var email = document.getElementById('login-email').value.trim();
+  var senha = document.getElementById('login-senha').value;
+  var btn   = document.getElementById('login-btn');
+  var erro  = document.getElementById('login-erro');
+  if(!email||!senha){ mostrarErro('Preencha e-mail e senha.'); return; }
+  if(!sb){ console.error('sb null'); mostrarErro('Erro de conexão. Recarregue a página.'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  sb.auth.signInWithPassword({email: email, password: senha})
+    .then(function(res){
+      if(res.error) throw res.error;
+      erro.classList.remove('vis');
+    })
+    .catch(function(e){
+      var msg = (e.message && (e.message.toLowerCase().includes('invalid') || e.message.toLowerCase().includes('credentials')))
+        ? 'E-mail ou senha incorretos.' : 'Erro ao entrar. Verifique as credenciais.';
+      mostrarErro(msg);
+      btn.disabled = false; btn.textContent = 'Entrar';
+    });
+}
+
+function mostrarErro(msg){
+  var el = document.getElementById('login-erro');
+  el.textContent = msg; el.classList.add('vis');
+}
+
+// Enter no campo senha
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('login-senha').addEventListener('keydown', function(e){ if(e.key==='Enter') fazerLogin(); });
+  document.getElementById('login-email').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-senha').focus(); });
+  // Credenciais embutidas — não precisa configurar manualmente
+  var defaultCfg = {
+    url: 'https://vmxrxabhgefouzpvalad.supabase.com',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZteHJ4YWJoZ2Vmb3V6cHZhbGFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3Njc3NzYsImV4cCI6MjA5NDM0Mzc3Nn0.vw9Mn87OojbsANyxghAPwkX-Z7QCjwd7g7xiENbLAqM'
+  };
+  saveSBConfig(defaultCfg);
+  initSupabase(defaultCfg);
+});
+
+function sair(){
+  if(sb) sb.auth.signOut();
+}
+
+function mostrarLogin(){
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display   = 'none';
+  document.getElementById('login-btn').disabled = false;
+  document.getElementById('login-btn').textContent = 'Entrar';
+}
+
+function mostrarApp(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'block';
+
+  var nome = currentUserData.nome || currentUser.email.split('@')[0];
+  var role = currentUserData.role || 'user';
+  var ini  = nome.substring(0,2).toUpperCase();
+  var cor  = role==='admin' ? '#C9A84C' : role==='medico' ? '#7b52a8' : '#3a9688';
+
+  document.getElementById('u-name').textContent   = nome;
+  document.getElementById('u-role').textContent   = role==='admin'?'Admin':role==='medico'?'Médico':'Secretária';
+  document.getElementById('u-avatar').textContent = ini;
+  document.getElementById('u-avatar').style.background = cor;
+
+  if(role === 'admin'){
+    document.getElementById('nav-admin').style.display = 'inline-flex';
+    carregarUsuarios();
+  }
+
+  // Carregar chave IA se salva
+  var iaKey = localStorage.getItem('drpedro_ia_key')||'';
+  if(iaKey) document.getElementById('ia-key-input').value = iaKey;
+
+  tick();
+  renderTL();
+  renderBib();
+  iniciarListenerContatos();
+  renderHistorico();
+  initFunil();
+  initPos();
+}
+
+// ══════════════════════════════════════════════
+// SUPABASE — LISTENER TEMPO REAL
+// ══════════════════════════════════════════════
+var realtimeChannel = null;
+
+function iniciarListenerContatos(){
+  if(!sb){ return; }
+  setSS('ing','Sincronizando...');
+
+  // Carregar dados iniciais
+  function carregarContatos(){
+    sb.from('contatos').select('*').order('created_at', {ascending: false})
+      .then(function(res){
+        if(res.error){ setSS('err','Erro de conexão'); return; }
+        contatosCache = res.data || [];
+        setSS('ok','Sincronizado');
+        renderLista(); renderStats(); renderChk(); atualizarHistStats();
+      });
+  }
+
+  carregarContatos();
+
+  // Realtime subscription
+  if(realtimeChannel) sb.removeChannel(realtimeChannel);
+  realtimeChannel = sb.channel('contatos-changes')
+    .on('postgres_changes', {event:'*', schema:'public', table:'contatos'}, function(){
+      carregarContatos();
+    })
+    .subscribe();
+}
+
+function setSS(state,txt){
+  var d=document.getElementById('sdot'),t=document.getElementById('stxt');
+  if(!d||!t) return;
+  d.className='sync-dot '+(state==='ok'?'ok':state==='ing'?'ing':'err');
+  t.textContent=txt;
+}
+
+// ══════════════════════════════════════════════
+// SALVAR CONTATO NO FIREBASE
+// ══════════════════════════════════════════════
+var fP='esa', filtroAtivo='todos';
+var chkFixos=[
+  {id:'f1',txt:'Nenhum preço foi mencionado hoje',done:false},
+  {id:'f2',txt:'Todos leads Dia 7 receberam convite',done:false},
+  {id:'f3',txt:'Banco de dados revisado — mornos identificados',done:false},
+  {id:'f4',txt:'Agendamentos do dia confirmados',done:false}
+];
+
+function setFP(p,btn){fP=p;document.querySelectorAll('#fp-sel .fp-btn').forEach(function(b){b.className='fp-btn';});btn.className='fp-btn sel-'+p;}
+function abrirForm(){document.getElementById('form-wrap').classList.add('open');document.getElementById('f-nome').focus();}
+function fecharForm(){document.getElementById('form-wrap').classList.remove('open');limparF();}
+function limparF(){['f-nome','f-fone','f-tipo','f-dia','f-dor','f-status','f-obs'].forEach(function(id){document.getElementById(id).value='';});fP='esa';document.querySelectorAll('#fp-sel .fp-btn').forEach(function(b,i){b.className='fp-btn'+(i===0?' sel-esa':'');});}
+
+function salvarContato(){
+  var nome=document.getElementById('f-nome').value.trim();
+  var fone=document.getElementById('f-fone').value.trim();
+  var tipo=document.getElementById('f-tipo').value;
+  var dia=document.getElementById('f-dia').value;
+  var dor=document.getElementById('f-dor').value;
+  var status=document.getElementById('f-status').value;
+  var obs=document.getElementById('f-obs').value.trim();
+  if(!nome){alert('Informe o nome do lead.');return;}
+  if(!tipo){alert('Selecione o tipo de lead.');return;}
+  if(!dia){alert('Selecione o dia da sequência.');return;}
+  var n=new Date();
+  var hora=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  var data=n.getDate().toString().padStart(2,'0')+'/'+(n.getMonth()+1).toString().padStart(2,'0')+'/'+n.getFullYear();
+  var pN={esa:'ESA',rh:'Reposição Hormonal',lip:'Lipedema Scan'};
+  var c={
+    nome,fone,tipo,dia,dor,status,obs,hora,data,
+    prog:fP, progNome:pN[fP],
+    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    criadoPor: currentUser ? currentUser.email : '—',
+    criadoPorNome: currentUserData ? (currentUserData.nome||'—') : '—'
+  };
+  setSS('ing','Salvando...');
+  sb.from('contatos').insert([{
+    nome:c.nome, fone:c.fone, tipo:c.tipo, dia:c.dia, dor:c.dor,
+    status:c.status, obs:c.obs, hora:c.hora, data:c.data,
+    prog:c.prog, prog_nome:c.progNome,
+    criado_por: currentUser ? currentUser.email : '—',
+    criado_por_nome: currentUserData ? (currentUserData.nome||'—') : '—'
+  }])
+  .then(function(res){
+    if(res.error){ alert('Erro ao salvar: '+res.error.message); setSS('err','Erro ao salvar'); return; }
+    fecharForm();
+  });
+}
+
+function remContato(id){
+  if(!confirm('Remover este registro?')) return;
+  sb.from('contatos').delete().eq('id', id)
+    .then(function(res){ if(res.error) alert('Erro ao remover: '+res.error.message); });
+}
+
+// ══════════════════════════════════════════════
+// RENDER LISTA E STATS
+// ══════════════════════════════════════════════
+function hoje(){
+  var n=new Date();
+  return n.getDate().toString().padStart(2,'0')+'/'+(n.getMonth()+1).toString().padStart(2,'0')+'/'+n.getFullYear();
+}
+
+function contatosHoje(){
+  var h=hoje();
+  return contatosCache.filter(function(c){return c.data===h;});
+}
+
+function setFiltro(f,btn){
+  filtroAtivo=f;
+  document.querySelectorAll('.filtro-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderLista();
+}
+
+function renderStats(){
+  var cs=contatosHoje();
+  document.getElementById('st-total').textContent=cs.length;
+  document.getElementById('st-esa').textContent=cs.filter(function(c){return c.prog==='esa';}).length;
+  document.getElementById('st-rh').textContent=cs.filter(function(c){return c.prog==='rh';}).length;
+  document.getElementById('st-lip').textContent=cs.filter(function(c){return c.prog==='lip';}).length;
+  document.getElementById('st-agd').textContent=cs.filter(function(c){return c.status&&c.status.includes('confirmado');}).length;
+}
+
+function atualizarHistStats(){
+  var t=contatosCache;
+  document.getElementById('ht-total').textContent=t.length;
+  document.getElementById('ht-esa').textContent=t.filter(function(c){return c.prog==='esa';}).length;
+  document.getElementById('ht-rh').textContent=t.filter(function(c){return c.prog==='rh';}).length;
+  document.getElementById('ht-lip').textContent=t.filter(function(c){return c.prog==='lip';}).length;
+  document.getElementById('ht-agd').textContent=t.filter(function(c){return c.status&&c.status.includes('confirmado');}).length;
+}
+
+function renderLista(){
+  var lista=document.getElementById('lista');
+  lista.querySelectorAll('.c-card').forEach(function(el){el.remove();});
+  var cs=contatosHoje();
+  if(filtroAtivo!=='todos'){
+    cs=cs.filter(function(c){
+      if(filtroAtivo==='esa') return c.prog==='esa';
+      if(filtroAtivo==='rh') return c.prog==='rh';
+      if(filtroAtivo==='lip') return c.prog==='lip';
+      if(filtroAtivo==='frio') return c.tipo&&c.tipo.includes('Frio');
+      if(filtroAtivo==='morno') return c.tipo&&c.tipo.includes('Morno');
+      return true;
+    });
+  }
+  document.getElementById('vazio').style.display=cs.length===0?'block':'none';
+  var pC={esa:'ct-esa',rh:'ct-rh',lip:'ct-lip'};
+  cs.forEach(function(c){
+    var obsH=c.obs?'<div class="c-obs"><div class="cfl">Observações</div><div class="c-obs-v">'+esc(c.obs)+'</div></div>':'';
+    var criador=c.criadoPorNome&&c.criadoPorNome!=='—'?'<span class="ctag ct-hora">✍ '+esc(c.criadoPorNome)+'</span>':'';
+    var card=document.createElement('div'); card.className='c-card';
+    card.innerHTML='<div class="c-card-hd"><div><div class="c-nome">'+esc(c.nome)+'</div><div class="c-tags"><span class="ctag '+(pC[c.prog]||'ct-dia')+'">'+esc(c.progNome||'')+'</span><span class="ctag '+(c.tipo&&c.tipo.includes('Frio')?'ct-frio':'ct-morno')+'">'+esc(c.tipo||'')+'</span><span class="ctag ct-dia">'+esc(c.dia||'')+'</span><span class="ctag ct-hora">⏱ '+esc(c.hora||'')+'</span>'+criador+'</div></div><button class="btn-rem" onclick="remContato(\''+c.id+'\')">✕</button></div><div class="c-card-bd"><div class="c-fields"><div><div class="cfl">WhatsApp</div><div class="cfv">'+(c.fone||'—')+'</div></div><div><div class="cfl">Dor / Motivo</div><div class="cfv">'+(c.dor||'—')+'</div></div><div><div class="cfl">Status</div><div class="cfv">'+(c.status||'—')+'</div></div></div>'+obsH+'</div>';
+    lista.appendChild(card);
+  });
+}
+
+function renderChk(){
+  var cs=contatosHoje();
+  var sec=document.getElementById('chk-sec');
+  var g=document.getElementById('chk-grid');
+  var fx=document.getElementById('chk-fixo');
+  if(cs.length===0){sec.style.display='none';return;}
+  sec.style.display='block';
+  g.innerHTML='';
+  cs.forEach(function(c){
+    var done=c.status&&(c.status.includes('confirmado')||c.status.includes('Desistiu'));
+    var el=document.createElement('div');el.className='chk-item'+(done?' done':'');el.onclick=function(){this.classList.toggle('done');};
+    el.innerHTML='<div class="chk-box"></div><div class="chk-txt">'+esc(c.nome)+' ['+esc(c.progNome||'')+'] — '+esc(c.dia||'')+'</div>';
+    g.appendChild(el);
+  });
+  fx.innerHTML='';
+  var saved=null; try{ saved=JSON.parse(localStorage.getItem('drpedro_chk')||'null'); }catch(e){}
+  if(saved && saved.data===hoje()){ chkFixos=saved.items; }
+  else{ chkFixos=[{id:'f1',txt:'Nenhum preço foi mencionado hoje',done:false},{id:'f2',txt:'Todos leads Dia 7 receberam convite',done:false},{id:'f3',txt:'Banco de dados revisado — mornos identificados',done:false},{id:'f4',txt:'Agendamentos do dia confirmados',done:false}]; }
+  chkFixos.forEach(function(f){
+    var el=document.createElement('div');el.className='chk-item'+(f.done?' done':'');
+    el.onclick=function(){f.done=!f.done;this.classList.toggle('done');localStorage.setItem('drpedro_chk',JSON.stringify({data:hoje(),items:chkFixos}));};
+    el.innerHTML='<div class="chk-box"></div><div class="chk-txt">'+f.txt+'</div>';
+    fx.appendChild(el);
+  });
+}
+
+// ══════════════════════════════════════════════
+// HISTÓRICO
+// ══════════════════════════════════════════════
+function renderHistorico(){
+  var hl=document.getElementById('hist-lista');
+  if(!hl) return;
+  atualizarHistStats();
+  if(contatosCache.length===0){hl.innerHTML='<div class="vazio">Nenhum contato registrado ainda.</div>';return;}
+  var grupos={};
+  contatosCache.forEach(function(c){
+    var d=c.data||'Sem data';
+    if(!grupos[d]) grupos[d]=[];
+    grupos[d].push(c);
+  });
+  var datas=Object.keys(grupos).sort(function(a,b){
+    var pa=a.split('/').reverse().join('');
+    var pb=b.split('/').reverse().join('');
+    return pb.localeCompare(pa);
+  });
+  hl.innerHTML='';
+  datas.forEach(function(data){
+    var cs=grupos[data];
+    var agd=cs.filter(function(c){return c.status&&c.status.includes('confirmado');}).length;
+    var card=document.createElement('div'); card.className='hist-card';
+    var rowsHTML=cs.map(function(c){
+      var sc=c.status&&c.status.includes('confirmado')?'hs-ok':c.status&&c.status.includes('Não')?'hs-no':c.status&&c.status.includes('Desistiu')?'hs-out':'hs-wait';
+      var sl=(c.status||'—').split('—')[0].trim().substring(0,22);
+      return '<div class="hist-row"><div><div class="hist-nome">'+esc(c.nome)+'</div><div class="hist-prog">'+esc(c.progNome||'')+'</div></div><div style="font-size:11px;color:#5a7a74;">'+esc(c.dia||'—')+'</div><div style="font-size:11px;color:#5a7a74;">'+esc(c.tipo||'—')+'</div><div><span class="hist-status '+sc+'">'+esc(sl)+'</span></div></div>';
+    }).join('');
+    card.innerHTML='<div class="hist-date"><div class="hist-date-txt">'+esc(data)+'</div><div class="hist-date-meta">'+cs.length+' contato(s) · '+agd+' agendamento(s)</div></div><div class="hist-rows">'+rowsHTML+'</div>';
+    hl.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════
+// ADMIN — CRIAR USUÁRIOS
+// ══════════════════════════════════════════════
+function carregarUsuarios(){
+  if(!sb) return;
+  sb.from('usuarios').select('*')
+    .then(function(res){
+      var ul=document.getElementById('users-list');
+      if(!ul) return;
+      ul.innerHTML='';
+      var data = res.data||[];
+      if(data.length===0){ul.innerHTML='<div style="font-size:12px;color:#5a7a74;padding:8px 0;">Nenhum usuário cadastrado.</div>';return;}
+      var cores={admin:'#C9A84C',medico:'#7b52a8',user:'#3a9688'};
+      data.forEach(function(d){
+        var cor=cores[d.role]||'#3a9688';
+        var roleTxt=d.role==='admin'?'Admin':d.role==='medico'?'Médico':'Secretária';
+        var row=document.createElement('div'); row.className='user-row';
+        row.innerHTML='<div class="u-avatar" style="background:'+cor+';">'+esc((d.nome||'?').substring(0,2).toUpperCase())+'</div><div class="u-info"><div class="u-name">'+esc(d.nome||'—')+'</div><div class="u-email">'+esc(d.email||'—')+'</div></div><span class="u-role '+(d.role==='admin'?'r-admin':'r-user')+'">'+roleTxt+'</span>';
+        ul.appendChild(row);
+      });
+    });
+}
+
+function criarUsuario(){
+  var nome=document.getElementById('new-nome').value.trim();
+  var email=document.getElementById('new-email').value.trim();
+  var senha=document.getElementById('new-senha').value;
+  var msg=document.getElementById('admin-msg');
+  if(!nome||!email||!senha){alert('Preencha nome, e-mail e senha.');return;}
+  if(senha.length<6){alert('A senha deve ter no mínimo 6 caracteres.');return;}
+
+  // No Supabase, criar usuário via Admin API requer service_role key
+  // Alternativa segura: usuário se registra via signup e admin insere perfil
+  sb.auth.signUp({email: email, password: senha})
+    .then(function(res){
+      if(res.error) throw res.error;
+      var uid = res.data.user ? res.data.user.id : null;
+      if(!uid) throw new Error('UID não retornado');
+      return sb.from('usuarios').insert([{id: uid, nome: nome, email: email, role: 'user'}]);
+    })
+    .then(function(res){
+      if(res.error) throw res.error;
+      msg.style.display='block'; msg.style.color='#1e6357';
+      msg.textContent='✓ Usuário '+nome+' criado! Ele deve confirmar o e-mail antes de entrar.';
+      document.getElementById('new-nome').value='';
+      document.getElementById('new-email').value='';
+      document.getElementById('new-senha').value='';
+      carregarUsuarios();
+      setTimeout(function(){msg.style.display='none';},5000);
+    })
+    .catch(function(e){
+      alert('Erro ao criar usuário: '+(e.message||e));
+    });
+}
+
+function salvarIAKey(){
+  var k=document.getElementById('ia-key-input').value.trim();
+  if(!k){alert('Digite a chave de API.');return;}
+  localStorage.setItem('drpedro_ia_key', k);
+  var s=document.getElementById('ia-status');
+  s.textContent='✓ Chave salva neste dispositivo.'; s.style.color='#1e6357';
+  setTimeout(function(){s.textContent='';},3000);
+}
+
+function confirmarLimpar(){
+  if(!confirm('Apagar TODOS os contatos do banco? Esta ação não pode ser desfeita.')) return;
+  if(!confirm('Segunda confirmação: apagar todo o histórico?')) return;
+  var batch=db.batch();
+  db.collection('contatos').get().then(function(snap){
+    snap.forEach(function(doc){ batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function(){ alert('Histórico apagado.'); });
+}
+
+// ══════════════════════════════════════════════
+// VÍDEOS + IA
+// ══════════════════════════════════════════════
+var VK='drpedro_vids_v2';
+function getVids(){try{return JSON.parse(localStorage.getItem(VK)||'[]');}catch(e){return[];}}
+function saveVids(d){localStorage.setItem(VK,JSON.stringify(d));}
+
+function handleUpload(files){Array.from(files).forEach(function(f){analisarVid(f);});}
+
+async function analisarVid(file){
+  var bar=document.getElementById('anl-bar');
+  document.getElementById('anl-txt').textContent='Analisando "'+file.name+'"...';
+  bar.classList.add('vis');
+  var key=localStorage.getItem('drpedro_ia_key')||'';
+  var resultado;
+  if(!key){ resultado=classNome(file.name); }
+  else {
+    try{
+      var prompt='Você é especialista em marketing médico. Analise o nome deste vídeo para o consultório do Dr. Pedro Carrijo com 3 programas: ESA (Emagrecimento Saudável), RH (Reposição Hormonal), Lipedema Scan.\n\nNome: '+file.name+'\n\nResponda APENAS em JSON:\n{"tipo":"educativo ou depoimento ou reel ou outro","prog":"esa ou rh ou lip ou geral","categoria":"descrição até 60 chars","analise":"2-3 frases de como usar no follow up","tags":["tag1"],"dia_recomendado":"Dia 2 ou Dia 3 ou Dia 4 ou Dia 5 ou Reforço"}';
+      var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+      var data=await res.json();
+      resultado=JSON.parse((data.content&&data.content[0]?data.content[0].text:'{}').replace(/```json|```/g,'').trim());
+    } catch(e){ resultado=classNome(file.name); }
+  }
+  var v={id:Date.now(),nome:file.name,tamanho:file.size,tipo:resultado.tipo||'outro',prog:resultado.prog||'geral',categoria:resultado.categoria||file.name,analise:resultado.analise||'',tags:resultado.tags||[],diaRec:resultado.dia_recomendado||'',dataUpload:new Date().toLocaleDateString('pt-BR')};
+  var vids=getVids(); vids.push(v); saveVids(vids);
+  bar.classList.remove('vis'); renderBib(); renderTL();
+}
+
+function classNome(nome){
+  var n=nome.toLowerCase();
+  var prog='geral',tipo='educativo',tags=[];
+  if(n.includes('esa')||n.includes('emagrecimento')||n.includes('dieta')){prog='esa';tags.push('ESA');}
+  else if(n.includes('rh')||n.includes('hormoni')||n.includes('reposicao')){prog='rh';tags.push('RH');}
+  else if(n.includes('lipedema')||n.includes('scan')){prog='lip';tags.push('Lipedema');}
+  if(n.includes('depo')||n.includes('resultado')){tipo='depoimento';tags.push('Depoimento');}
+  else if(n.includes('reel')){tipo='reel';tags.push('Reel');}
+  else{tags.push('Educativo');}
+  return{tipo,prog,tags,categoria:{esa:'ESA',rh:'RH',lip:'Lipedema',geral:'Geral'}[prog]+' · '+tipo,analise:'Classificado pelo nome do arquivo.'};
+}
+
+function remVid(id){if(!confirm('Remover vídeo?'))return;saveVids(getVids().filter(function(v){return v.id!==id;}));renderBib();renderTL();}
+
+function renderBib(){
+  var bib=document.getElementById('bib');
+  bib.querySelectorAll('.bib-card').forEach(function(el){el.remove();});
+  var vids=getVids();
+  document.getElementById('bib-vazio').style.display=vids.length===0?'block':'none';
+  var pC={esa:'ct-esa',rh:'ct-rh',lip:'ct-lip',geral:'ct-dia'};
+  var pN={esa:'ESA',rh:'RH',lip:'Lipedema',geral:'Geral'};
+  vids.forEach(function(v){
+    var tH=(v.tags||[]).map(function(t){return '<span class="ctag ct-hora">'+esc(t)+'</span>';}).join('');
+    var card=document.createElement('div'); card.className='bib-card';
+    card.innerHTML='<div class="bib-top"><div><div class="bib-nome">'+esc(v.nome)+'</div><div class="bib-tags"><span class="ctag '+(pC[v.prog]||'ct-dia')+'">'+(pN[v.prog]||'Geral')+'</span><span class="ctag ct-dia">'+esc(v.tipo)+'</span>'+(v.diaRec?'<span class="ctag ct-morno">'+esc(v.diaRec)+'</span>':'')+tH+'</div></div><button class="btn-remb" onclick="remVid('+v.id+')">✕</button></div>'+(v.analise?'<div class="bib-desc">'+esc(v.analise)+'</div>':'')+'<div class="bib-acts"><button class="btn-copiar" data-nome="'+esc(v.nome)+'" onclick="cpNome(this)">📋 Copiar nome</button><span style="font-size:11px;color:#5a7a74;">'+((v.tamanho||0)/1024/1024).toFixed(1)+'MB</span></div>';
+    bib.appendChild(card);
+  });
+}
+function cpNome(btn){var nome=btn.dataset.nome||'';navigator.clipboard.writeText(nome).then(function(){btn.textContent='✓ Copiado!';btn.classList.add('ok2');setTimeout(function(){btn.textContent='📋 Copiar nome';btn.classList.remove('ok2');},2000);}).catch(function(){prompt('Copie:',nome);});}
+
+// ══════════════════════════════════════════════
+// MENSAGENS
+// ══════════════════════════════════════════════
+var pA='esa', tA='frio';
+var MSGS={
+  esa:{frio:[{dia:'1',fase:'Qualificação da Dor',badges:['b-texto|Texto'],msg:'"Oi [nome]! 😊 Vi que você se interessou no Método ESA. Antes de te mandar qualquer coisa, me conta: o que mais te incomoda hoje — disposição, estética ou saúde?"',tip:'Aguarde a resposta. Ela define qual vídeo enviar.'},
+  {dia:'2',fase:'Educação — Método ESA',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro gravou um vídeo explicando por que a maioria das dietas sozinhas não funciona — e o que muda com acompanhamento médico no Método ESA." [video-esa-dieta-falha.mp4]',tip:'Use o vídeo alinhado com a dor declarada no Dia 1.'},
+  {dia:'4',fase:'Prova Social',badges:['b-depo|Depoimento'],msg:'"[nome], olha o resultado que a [nome paciente] teve em 2 meses no Método ESA..." + depoimento alinhado ao perfil.',tip:'Usar depo-esa-estetica, depo-esa-saude ou depo-esa-energia.'},
+  {dia:'7',fase:'Convite — Avaliação Inicial',badges:['b-texto|Texto'],msg:'"[nome], antes de qualquer decisão o Dr. Pedro faz uma avaliação inicial rápida. Quer que eu verifique um horário essa semana?"',tip:'Não fale em valor. Meta é o agendamento.'}],
+  morno:[{dia:'1',fase:'Reativação — ESA',badges:['b-texto|Texto'],msg:'"Oi [nome], tudo bem? Faz um tempo que a gente não se falava sobre o Método ESA. Queria ver se esse objetivo ainda está no seu radar."',tip:'Tom humano. Não trate como lead novo.'},
+  {dia:'3',fase:'Novidade no Protocolo',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro atualizou o protocolo do Método ESA com ajuste nos exames que está fazendo muita diferença." [video-esa-dieta-falha.mp4]',tip:'Criar percepção de evolução do método.'},
+  {dia:'5',fase:'Depoimento — Retomada',badges:['b-depo|Depoimento'],msg:'"[nome], esse caso me marcou — a [nome] também tinha pausado e quando voltou os resultados foram ainda melhores." + depoimento',tip:'Depoimento de paciente que retomou.'},
+  {dia:'7',fase:'Oferta de Retorno',badges:['b-texto|Texto'],msg:'"[nome], pra quem já conhece o Dr. Pedro o retorno é mais rápido — já temos seu histórico. Posso verificar os horários dessa semana?"',tip:'O histórico é a vantagem.'}]},
+  rh:{frio:[{dia:'1',fase:'Qualificação — Hormonal',badges:['b-texto|Texto'],msg:'"Oi [nome]! 😊 Me conta: o que mais te incomoda — cansaço, libido, ganho de peso ou algo relacionado à menopausa/andropausa?"',tip:'Define o perfil masculino ou feminino.'},
+  {dia:'2',fase:'Educação — Reposição Hormonal',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro explica como o desequilíbrio hormonal afeta energia, peso e qualidade de vida." [video-rh-hormonio-vida.mp4]',tip:'Tom informativo e acolhedor.'},
+  {dia:'4',fase:'Prova Social — RH',badges:['b-depo|Depoimento'],msg:'"[nome], olha o relato do [nome paciente] sobre o processo de reposição hormonal com o Dr. Pedro..." + depoimento.',tip:'Depoimento do mesmo gênero do lead.'},
+  {dia:'7',fase:'Convite — Avaliação Hormonal',badges:['b-texto|Texto'],msg:'"[nome], o primeiro passo é uma avaliação — o Dr. Pedro analisa o quadro e os exames. Posso verificar um horário?"',tip:'Não citar protocolos ou medicamentos.'}],
+  morno:[{dia:'1',fase:'Reativação — RH',badges:['b-texto|Texto'],msg:'"Oi [nome], queria saber se os sintomas que você mencionou ainda estão presentes."',tip:'Referenciar o sintoma mencionado antes.'},
+  {dia:'3',fase:'Novidade — Protocolo RH',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro atualizou o protocolo de reposição e está vendo resultados diferentes." [video-rh-hormonio-vida.mp4]',tip:'Quem parou por dúvida precisa de segurança.'},
+  {dia:'5',fase:'Depoimento Retomada — RH',badges:['b-depo|Depoimento'],msg:'"[nome], esse relato me lembrou da sua situação — quando iniciou a reposição a mudança foi muito significativa." + depoimento',tip:'Depoimento do mesmo gênero.'},
+  {dia:'7',fase:'Oferta de Retorno — RH',badges:['b-texto|Texto'],msg:'"[nome], a consulta de avaliação hormonal já parte de um contexto mais direcionado. Posso verificar os horários?"',tip:'Usar o histórico como facilitador.'}]},
+  lip:{frio:[{dia:'1',fase:'Qualificação — Lipedema',badges:['b-texto|Texto'],msg:'"Oi [nome]! 😊 Me conta: você já tem diagnóstico de lipedema ou está investigando os sintomas?"',tip:'Quem já tem diagnóstico vai mais rápido ao agendamento.'},
+  {dia:'2',fase:'Educação — Lipedema Scan',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro explica o que é lipedema, por que é confundido com obesidade — e como o Lipedema Scan faz o diagnóstico." [video-lipedema-scan.mp4]',tip:'Tom validador. Esse público sofreu sem diagnóstico.'},
+  {dia:'4',fase:'Prova Social — Lipedema',badges:['b-depo|Depoimento'],msg:'"[nome], a história da [nome] me tocou — anos sem diagnóstico, até chegar no Lipedema Scan." + depoimento.',tip:'Paciente que tentou emagrecer sem resultado antes.'},
+  {dia:'7',fase:'Convite — Lipedema Scan',badges:['b-texto|Texto'],msg:'"[nome], o Lipedema Scan começa com uma avaliação onde o Dr. Pedro faz o diagnóstico e traça o protocolo. Posso verificar um horário?"',tip:'Foco: diagnóstico e qualidade de vida.'}],
+  morno:[{dia:'1',fase:'Reativação — Lipedema',badges:['b-texto|Texto'],msg:'"Oi [nome], queria saber se você ainda está buscando o diagnóstico/tratamento do lipedema."',tip:'Tom de acolhimento. Sem pressão.'},
+  {dia:'3',fase:'Novidade — Protocolo Lipedema',badges:['b-video|Vídeo Dr. Pedro'],msg:'"[nome], o Dr. Pedro aprimorou o protocolo do Lipedema Scan e está conseguindo resultados expressivos." [video-lipedema-scan.mp4]',tip:'Novidade clínica tem muito peso nesse público.'},
+  {dia:'5',fase:'Depoimento Retomada',badges:['b-depo|Depoimento'],msg:'"[nome], essa paciente ficou meses sem dar o passo — quando veio disse que o maior arrependimento foi ter demorado." + depoimento.',tip:'Urgência com acolhimento.'},
+  {dia:'7',fase:'Oferta de Retorno — Lipedema',badges:['b-texto|Texto'],msg:'"[nome], a avaliação já parte de um contexto mais completo do seu caso. Posso verificar os horários?"',tip:'Sentir que o médico lembra dela é muito importante.'}]}
+};
+
+function renderTL(){
+  var a=document.getElementById('tl'); a.innerHTML='';
+  MSGS[pA][tA].forEach(function(s,i){
+    var bH=s.badges.map(function(b){var p=b.split('|');return '<span class="badge '+p[0]+'">'+p[1]+'</span>';}).join('');
+    var vids=getVids().filter(function(v){
+      if(v.prog&&v.prog!==pA&&v.prog!=='geral') return false;
+      if(s.dia==='1') return false;
+      if(s.dia==='2'||s.dia==='3') return v.tipo==='educativo';
+      if(s.dia==='4'||s.dia==='5') return v.tipo==='depoimento';
+      return false;
+    });
+    var vsH=vids.length>0
+      ? '<div class="vid-section"><div class="vid-label">🎬 Vídeos disponíveis <em>'+vids.length+'</em></div><div class="vid-slots">'+vids.map(function(v){return '<div class="vid-slot"><div class="vid-slot-icon">▶</div><div style="flex:1;min-width:0"><div class="vid-slot-name">'+esc(v.nome)+'</div><div class="vid-slot-cat">'+esc(v.categoria||v.tipo)+'</div></div><button class="btn-cp" data-nome="'+esc(v.nome)+'" onclick="cpVid(this)">Copiar</button></div>';}).join('')+'</div></div>'
+      : '<div class="vid-section"><div class="vid-label">🎬 Sem vídeo para este dia <em class="sem">Adicione na aba Vídeos</em></div></div>';
+    var r=document.createElement('div'); r.className='day-row'; r.style.animationDelay=(i*0.06)+'s';
+    r.innerHTML='<div class="day-marker"><div class="day-circle"><span>'+s.dia+'</span><span>Dia</span></div></div><div class="day-card"><div class="card-top"><div class="card-fase">'+s.fase+'</div><div class="badges">'+bH+'</div></div><div class="card-msg '+pA+'-msg">'+s.msg+'</div><div class="card-tip">'+s.tip+'</div>'+vsH+'</div>';
+    a.appendChild(r);
+  });
+}
+function setProg(p,btn){pA=p;document.querySelectorAll('.prog-btn').forEach(function(b){b.className='prog-btn';});btn.className='prog-btn active-'+p;renderTL();}
+function setTipo(t,btn){tA=t;document.querySelectorAll('.tipo-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');renderTL();}
+function cpVid(btn){var nome=btn.dataset.nome||'';navigator.clipboard.writeText(nome).then(function(){btn.textContent='✓ Copiado!';btn.classList.add('ok');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('ok');},2000);}).catch(function(){prompt('Copie:',nome);});}
+
+// ══════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════
+function showNav(id,btn){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='historico') renderHistorico();
+  if(id==='admin') carregarUsuarios();
+  if(id==='registro'){renderLista();renderStats();}
+  if(id==='funil') renderKanban();
+  if(id==='pos'){renderPosMsgs();renderPosLista();renderPosStats();}
+}
+
+// ══════════════════════════════════════════════
+// EXPORTAR CSV
+// ══════════════════════════════════════════════
+function exportarCSV(){
+  if(contatosCache.length===0){alert('Nenhum contato para exportar.');return;}
+  var h=['Data','Hora','Nome','WhatsApp','Programa','Tipo Lead','Dia Sequência','Dor / Motivo','Status','Observações','Registrado por'];
+  var rows=contatosCache.map(function(c){
+    return [c.data||'',c.hora||'',c.nome||'',c.fone||'',c.progNome||'',c.tipo||'',c.dia||'',c.dor||'',c.status||'',c.obs||'',c.criadoPorNome||'']
+      .map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');
+  });
+  var csv='\uFEFF'+h.join(',')+'\n'+rows.join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url;
+  var n=new Date();
+  a.download='followup-drpedro-'+n.getFullYear()+'-'+(n.getMonth()+1).toString().padStart(2,'0')+'-'+n.getDate().toString().padStart(2,'0')+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════
+// PDF
+// ══════════════════════════════════════════════
+function gerarPDF(){
+  if(typeof window.jspdf==='undefined'){alert('Aguarde e tente novamente.');return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,mg=16,cw=W-mg*2,y=0;
+  var VD=[30,99,87],OR=[201,168,76],PR=[26,26,26],CZ=[100,100,100],CZL=[236,248,244];
+  function pc(p){return p==='esa'?[46,128,112]:p==='rh'?[123,82,168]:[192,84,74];}
+  function pn(p){return p==='esa'?'ESA':p==='rh'?'Reposicao Hormonal':'Lipedema Scan';}
+  var now=new Date();
+  var DS=['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];
+  var MS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,0,W,30,'F');
+  doc.setFillColor(OR[0],OR[1],OR[2]);doc.rect(0,28,W,2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(255,255,255);doc.text('DR. PEDRO CARRIJO',mg,13);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,225,215);doc.text('SISTEMA DE FOLLOW UP  |  USO INTERNO',mg,21);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,255,255);doc.text(DS[now.getDay()]+', '+now.getDate()+' '+MS[now.getMonth()]+' '+now.getFullYear(),W-mg,13,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,225,215);doc.text('Gerado as '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'),W-mg,21,{align:'right'});
+  y=38;
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(VD[0],VD[1],VD[2]);doc.text('REGISTRO DO DIA — '+hoje(),mg,y);y+=3;
+  doc.setFillColor(OR[0],OR[1],OR[2]);doc.rect(mg,y,55,0.8,'F');y+=9;
+  var cs=contatosHoje();
+  var bp={esa:0,rh:0,lip:0};cs.forEach(function(c){if(bp[c.prog]!==undefined)bp[c.prog]++;});
+  var agd=cs.filter(function(c){return c.status&&c.status.includes('confirmado');}).length;
+  doc.setFillColor(CZL[0],CZL[1],CZL[2]);doc.roundedRect(mg,y,cw,20,3,3,'F');
+  [['TOTAL',String(cs.length)],['ESA',String(bp.esa)],['RH',String(bp.rh)],['LIPEDEMA',String(bp.lip)],['AGENDADOS',String(agd)]].forEach(function(r,i){
+    var cx=mg+(cw/5)*i+cw/10;
+    doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(VD[0],VD[1],VD[2]);doc.text(r[1],cx,y+9,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text(r[0],cx,y+15,{align:'center'});
+  });y+=26;
+  if(cs.length===0){doc.setFont('helvetica','italic');doc.setFontSize(11);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text('Nenhum contato registrado hoje.',mg,y+10);}
+  else{
+    cs.forEach(function(c,idx){
+      var hasO=c.obs&&c.obs.length>0;var oL=hasO?doc.splitTextToSize(c.obs,cw-18):[];var cH=38+(hasO?Math.min(oL.length,3)*5+12:0);
+      if(y+cH>275){doc.addPage();doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,0,W,10,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);doc.text('DR. PEDRO CARRIJO - FOLLOW UP',mg,7);doc.text('Pagina '+doc.getNumberOfPages(),W-mg,7,{align:'right'});y=18;}
+      var c_=pc(c.prog);
+      doc.setFillColor(248,253,251);doc.roundedRect(mg,y,cw,cH,3,3,'F');
+      doc.setDrawColor(c_[0],c_[1],c_[2]);doc.setLineWidth(0.4);doc.roundedRect(mg,y,cw,cH,3,3,'S');
+      doc.setFillColor(c_[0],c_[1],c_[2]);doc.rect(mg,y,3.5,cH,'F');
+      doc.setFillColor(VD[0],VD[1],VD[2]);doc.circle(mg+12,y+9,5,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);doc.text(String(idx+1).padStart(2,'0'),mg+12,y+11,{align:'center'});
+      doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(PR[0],PR[1],PR[2]);doc.text(c.nome,mg+22,y+10);
+      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text(c.hora||'',W-mg-3,y+10,{align:'right'});
+      doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(c_[0],c_[1],c_[2]);doc.setDrawColor(c_[0],c_[1],c_[2]);doc.setLineWidth(0.35);
+      var pn_=pn(c.prog);var pw=doc.getTextWidth(pn_)+6;doc.roundedRect(mg+22,y+13,pw,4.5,1,1,'S');doc.text(pn_,mg+25,y+17);
+      var tc_=c.tipo&&c.tipo.includes('Frio')?[200,70,70]:[200,150,40];doc.setTextColor(tc_[0],tc_[1],tc_[2]);doc.setDrawColor(tc_[0],tc_[1],tc_[2]);
+      var tw=doc.getTextWidth(c.tipo||'')+6;doc.roundedRect(mg+26+pw,y+13,tw,4.5,1,1,'S');doc.text(c.tipo||'',mg+29+pw,y+17);
+      doc.setDrawColor(210,235,228);doc.setLineWidth(0.3);doc.line(mg+4,y+21,mg+cw-3,y+21);
+      [['WHATSAPP',c.fone||'—'],['DOR / MOTIVO',c.dor||'—'],['STATUS',c.status||'—']].forEach(function(f,fi){
+        var fx2=mg+6+(cw-10)/3*fi;
+        doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text(f[0],fx2,y+27);
+        doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(PR[0],PR[1],PR[2]);doc.text(doc.splitTextToSize(f[1],(cw-10)/3-4)[0],fx2,y+33);
+      });
+      if(hasO){doc.setDrawColor(220,240,234);doc.setLineWidth(0.3);doc.line(mg+4,y+37,mg+cw-3,y+37);doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text('OBSERVACOES',mg+6,y+43);doc.setFillColor(OR[0],OR[1],OR[2]);doc.rect(mg+6,y+44.5,1.8,oL.slice(0,3).length*5+2,'F');doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(PR[0],PR[1],PR[2]);oL.slice(0,3).forEach(function(l,li){doc.text(l,mg+11,y+43+6+li*5);});}
+      y+=cH+5;
+    });
+  }
+  var pg=doc.getNumberOfPages();for(var p=1;p<=pg;p++){doc.setPage(p);doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,287,W,10,'F');doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(200,230,225);doc.text('Dr. Pedro Carrijo  |  Metodo ESA  |  Reposicao Hormonal  |  Lipedema Scan',mg,293);doc.text('Pagina '+p+' de '+pg,W-mg,293,{align:'right'});}
+  doc.save('followup-'+now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0')+'-'+now.getDate().toString().padStart(2,'0')+'.pdf');
+}
+
+function gerarPDFHistorico(){
+  if(typeof window.jspdf==='undefined'){alert('Aguarde e tente novamente.');return;}
+  if(contatosCache.length===0){alert('Nenhum contato no histórico.');return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210,mg=16,cw=W-mg*2,y=0;
+  var VD=[30,99,87],OR=[201,168,76],PR=[26,26,26],CZ=[100,100,100],CZL=[236,248,244];
+  function pc(p){return p==='esa'?[46,128,112]:p==='rh'?[123,82,168]:[192,84,74];}
+  function pn(p){return p==='esa'?'ESA':p==='rh'?'Reposicao Hormonal':'Lipedema Scan';}
+  var now=new Date();
+  var DS=['Domingo','Segunda','Terca','Quarta','Quinta','Sexta','Sabado'];
+  var MS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,0,W,30,'F');doc.setFillColor(OR[0],OR[1],OR[2]);doc.rect(0,28,W,2,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(255,255,255);doc.text('DR. PEDRO CARRIJO',mg,13);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(180,225,215);doc.text('HISTORICO COMPLETO DE FOLLOW UP',mg,21);
+  doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(255,255,255);doc.text(DS[now.getDay()]+', '+now.getDate()+' '+MS[now.getMonth()]+' '+now.getFullYear(),W-mg,13,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,225,215);doc.text('Gerado as '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0'),W-mg,21,{align:'right'});
+  y=38;
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(VD[0],VD[1],VD[2]);doc.text('HISTORICO COMPLETO — '+contatosCache.length+' contato(s)',mg,y);y+=3;
+  doc.setFillColor(OR[0],OR[1],OR[2]);doc.rect(mg,y,55,0.8,'F');y+=9;
+  var todos=contatosCache;
+  var bp={esa:0,rh:0,lip:0};todos.forEach(function(c){if(bp[c.prog]!==undefined)bp[c.prog]++;});
+  var agd=todos.filter(function(c){return c.status&&c.status.includes('confirmado');}).length;
+  doc.setFillColor(CZL[0],CZL[1],CZL[2]);doc.roundedRect(mg,y,cw,20,3,3,'F');
+  [['TOTAL',String(todos.length)],['ESA',String(bp.esa)],['RH',String(bp.rh)],['LIPEDEMA',String(bp.lip)],['AGENDADOS',String(agd)]].forEach(function(r,i){var cx=mg+(cw/5)*i+cw/10;doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(VD[0],VD[1],VD[2]);doc.text(r[1],cx,y+9,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(CZ[0],CZ[1],CZ[2]);doc.text(r[0],cx,y+15,{align:'center'});});y+=26;
+  var grupos={};todos.forEach(function(c){var d=c.data||'Sem data';if(!grupos[d])grupos[d]=[];grupos[d].push(c);});
+  var datas=Object.keys(grupos).sort(function(a,b){return b.split('/').reverse().join('').localeCompare(a.split('/').reverse().join(''));});
+  datas.forEach(function(data){
+    var cs=grupos[data];
+    if(y+14>275){doc.addPage();doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,0,W,10,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);doc.text('DR. PEDRO CARRIJO - HISTORICO',mg,7);doc.text('Pagina '+doc.getNumberOfPages(),W-mg,7,{align:'right'});y=18;}
+    doc.setFillColor(242,250,248);doc.rect(mg,y,cw,8,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(VD[0],VD[1],VD[2]);doc.text(data+' — '+cs.length+' contato(s)',mg+4,y+5.5);y+=10;
+    cs.forEach(function(c){
+      if(y+10>275){doc.addPage();doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,0,W,10,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);doc.text('DR. PEDRO CARRIJO - HISTORICO',mg,7);doc.text('Pagina '+doc.getNumberOfPages(),W-mg,7,{align:'right'});y=18;}
+      var c_=pc(c.prog);doc.setFillColor(c_[0],c_[1],c_[2]);doc.rect(mg,y,2.5,8,'F');
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(PR[0],PR[1],PR[2]);doc.text(c.nome,mg+6,y+5.5);
+      doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(CZ[0],CZ[1],CZ[2]);
+      doc.text(pn(c.prog),mg+80,y+5.5);doc.text(c.dia||'',mg+135,y+5.5);
+      doc.text((c.status||'').split('—')[0].trim().substring(0,22),mg+168,y+5.5);doc.text(c.hora||'',W-mg-2,y+5.5,{align:'right'});
+      doc.setDrawColor(230,245,240);doc.setLineWidth(0.3);doc.line(mg,y+8,mg+cw,y+8);y+=9;
+    });y+=4;
+  });
+  var pg=doc.getNumberOfPages();for(var p=1;p<=pg;p++){doc.setPage(p);doc.setFillColor(VD[0],VD[1],VD[2]);doc.rect(0,287,W,10,'F');doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(200,230,225);doc.text('Dr. Pedro Carrijo  |  Metodo ESA  |  Reposicao Hormonal  |  Lipedema Scan',mg,293);doc.text('Pagina '+p+' de '+pg,W-mg,293,{align:'right'});}
+  doc.save('historico-drpedro-'+now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0')+'-'+now.getDate().toString().padStart(2,'0')+'.pdf');
+}
+
+// ══════════════════════════════════════════════
+// RELÓGIO + UTILS
+// ══════════════════════════════════════════════
+function tick(){
+  var n=new Date();
+  var h=document.getElementById('hora');var d=document.getElementById('datah');
+  if(h) h.textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  var D=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  var M=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  if(d) d.textContent=D[n.getDay()]+', '+n.getDate()+' '+M[n.getMonth()];
+}
+setInterval(tick,30000);
+
+
+// ══════════════════════════════════════════════
+// FUNIL KANBAN
+// ══════════════════════════════════════════════
+var FUNIL_COLS = [
+  {id:1, label:'Lead Novo',       cor:'kc-1'},
+  {id:2, label:'Em Conversa',     cor:'kc-2'},
+  {id:3, label:'Interessado',     cor:'kc-3'},
+  {id:4, label:'Agendado',        cor:'kc-4'},
+  {id:5, label:'Compareceu',      cor:'kc-5'},
+  {id:6, label:'Pós-Consulta',    cor:'kc-6'},
+  {id:7, label:'Precisa Retorno', cor:'kc-7'},
+  {id:8, label:'Reativação',      cor:'kc-8'}
+];
+
+var funilCards = [];
+var ffProg = 'esa';
+var cardModalId = null;
+
+function initFunil(){
+  if(!sb) return;
+  function carregarFunil(){
+    sb.from('funil').select('*').order('created_at', {ascending:false})
+      .then(function(res){ funilCards = res.data||[]; renderKanban(); });
+  }
+  carregarFunil();
+  sb.channel('funil-ch').on('postgres_changes',{event:'*',schema:'public',table:'funil'},function(){ carregarFunil(); }).subscribe();
+}
+
+function renderKanban(){
+  var kb = document.getElementById('kanban');
+  if(!kb) return;
+  kb.innerHTML = '';
+  var pC={esa:'ct-esa',rh:'ct-rh',lip:'ct-lip'};
+  var pN={esa:'ESA',rh:'RH',lip:'Lipedema'};
+
+  FUNIL_COLS.forEach(function(col){
+    var cards = funilCards.filter(function(c){ return (c.coluna||1) === col.id; });
+
+    var cardsHTML = cards.length === 0
+      ? '<div class="k-vazio">Vazio</div>'
+      : cards.map(function(c){
+          var borda = c.prog==='esa'?'var(--esa-cor)':c.prog==='rh'?'var(--rh-cor)':'var(--lip-cor)';
+          return '<div class="k-card" style="border-left-color:'+borda+';" data-id="'+c.id+'" onclick="abrirCardModal(this.dataset.id)">'+
+            '<div class="k-card-nome">'+esc(c.nome||'')+'</div>'+
+            '<div class="k-card-prog">'+(pN[c.prog]||'')+(c.tipo?' · '+c.tipo.split('—')[0].trim():'')+'</div>'+
+            (c.obs?'<div class="k-card-obs">'+esc(c.obs)+'</div>':'')+
+            '<div class="k-card-hora">'+esc(c.hora||'')+(c.data?' · '+esc(c.data):'')+'</div>'+
+          '</div>';
+        }).join('');
+
+    var colEl = document.createElement('div');
+    colEl.className = 'k-col';
+    colEl.innerHTML =
+      '<div class="k-header '+col.cor+'">'+
+        '<div class="k-title">'+col.label+'</div>'+
+        '<div class="k-count">'+cards.length+'</div>'+
+      '</div>'+
+      '<div class="k-body" id="kb-'+col.id+'">'+cardsHTML+'</div>';
+    kb.appendChild(colEl);
+  });
+}
+
+function setFFP(p,btn){ffProg=p;document.querySelectorAll('#ff-prog-sel .fp-btn').forEach(function(b){b.className='fp-btn';});btn.className='fp-btn sel-'+p;}
+function abrirFunilForm(){document.getElementById('funil-form-wrap').classList.add('open');document.getElementById('ff-nome').focus();}
+function fecharFunilForm(){document.getElementById('funil-form-wrap').classList.remove('open');['ff-nome','ff-fone','ff-tipo','ff-obs'].forEach(function(id){document.getElementById(id).value='';});ffProg='esa';document.querySelectorAll('#ff-prog-sel .fp-btn').forEach(function(b,i){b.className='fp-btn'+(i===0?' sel-esa':'');});}
+
+function salvarFunil(){
+  var nome=document.getElementById('ff-nome').value.trim();
+  if(!nome){alert('Informe o nome do lead.');return;}
+  var n=new Date();
+  var hora=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  var data=n.getDate().toString().padStart(2,'0')+'/'+(n.getMonth()+1).toString().padStart(2,'0')+'/'+n.getFullYear();
+  var pN={esa:'ESA',rh:'Reposição Hormonal',lip:'Lipedema Scan'};
+  sb.from('funil').insert([{
+    nome:nome, fone:document.getElementById('ff-fone').value.trim(),
+    tipo:document.getElementById('ff-tipo').value, obs:document.getElementById('ff-obs').value.trim(),
+    prog:ffProg, prog_nome:pN[ffProg], coluna:1,
+    hora:hora, data:data,
+    criado_por:currentUser?currentUser.email:'—'
+  }]).then(function(){ fecharFunilForm(); });
+}
+
+function abrirCardModal(id){
+  var c = funilCards.find(function(x){return x.id===id;});
+  if(!c) return;
+  cardModalId = id;
+  var pN={esa:'ESA',rh:'Reposição Hormonal',lip:'Lipedema Scan'};
+  document.getElementById('cm-nome').textContent = c.nome||'—';
+  document.getElementById('cm-prog').textContent = pN[c.prog]||'—';
+  document.getElementById('cm-fone').textContent = c.fone||'—';
+  document.getElementById('cm-tipo').textContent = c.tipo||'—';
+  document.getElementById('cm-col-sel').value = c.coluna||1;
+  document.getElementById('cm-obs-input').value = c.obs||'';
+  document.getElementById('card-modal').classList.add('open');
+}
+function fecharCardModal(){ document.getElementById('card-modal').classList.remove('open'); cardModalId=null; }
+
+function salvarMoverCard(){
+  if(!cardModalId) return;
+  var novaCol = parseInt(document.getElementById('cm-col-sel').value);
+  var novaObs = document.getElementById('cm-obs-input').value.trim();
+  sb.from('funil').update({coluna:novaCol, obs:novaObs}).eq('id', cardModalId)
+    .then(function(){ fecharCardModal(); });
+}
+function removerCard(){
+  if(!cardModalId || !confirm('Remover este lead do funil?')) return;
+  sb.from('funil').delete().eq('id', cardModalId).then(function(){ fecharCardModal(); });
+}
+
+// ══════════════════════════════════════════════
+// PÓS-CONSULTA
+// ══════════════════════════════════════════════
+var posPacientes = [];
+var posSeqAtiva = 'todas';
+
+var POS_MSGS = {
+  '7d': {
+    label:'7 dias após consulta',
+    tag:'ps-7d',
+    msgs: [
+      {prog:'todos', msg:'"Oi [nome]! 😊 Passando para saber como você está se sentindo após o início do acompanhamento. Teve alguma dificuldade com alimentação, medicações, rotina ou sintomas? Se precisar, posso alinhar qualquer ponto com o Dr. Pedro."'},
+    ]
+  },
+  '30d': {
+    label:'30 dias — lembrete de retorno',
+    tag:'ps-30d',
+    msgs: [
+      {prog:'esa',  msg:'"[nome], já faz um mês desde sua consulta com o Dr. Pedro no Método ESA! Como está indo? Esse é o momento ideal para um retorno e ajuste do protocolo. Posso verificar um horário essa semana?"'},
+      {prog:'rh',   msg:'"[nome], já faz um mês desde o início do acompanhamento hormonal com o Dr. Pedro. Esse é o momento certo para avaliar os primeiros resultados e ajustar o protocolo. Posso verificar um horário?"'},
+      {prog:'lip',  msg:'"[nome], já faz um mês desde sua avaliação com o Lipedema Scan. O Dr. Pedro gostaria de acompanhar sua evolução. Posso verificar um horário para o retorno essa semana?"'},
+    ]
+  },
+  '60d': {
+    label:'60 dias — engajamento',
+    tag:'ps-60d',
+    msgs: [
+      {prog:'todos', msg:'"[nome], como você está? O Dr. Pedro sempre pergunta sobre você. Esse é o momento ideal para avaliar sua evolução e ajustar o que for necessário. Posso verificar um horário de retorno?"'},
+    ]
+  },
+  'reativ': {
+    label:'Reativação — sumiu',
+    tag:'ps-reativ',
+    msgs: [
+      {prog:'esa',  msg:'"Oi [nome]! Faz um tempo que a gente não se fala. Sei que a rotina complica, mas queria saber se você ainda está cuidando do seu objetivo com o Método ESA. O Dr. Pedro tem horário essa semana se quiser retomar."'},
+      {prog:'rh',   msg:'"Oi [nome]! Faz um tempo desde nosso último contato sobre a Reposição Hormonal. Queria saber como você está. O Dr. Pedro tem horário essa semana se quiser retomar o acompanhamento."'},
+      {prog:'lip',  msg:'"Oi [nome]! Faz um tempo. Queria saber se você ainda está cuidando do seu tratamento de lipedema. O Dr. Pedro tem horário essa semana se quiser retomar."'},
+    ]
+  }
+};
+
+function initPos(){
+  if(!sb) return;
+  function carregarPos(){
+    sb.from('pos_consulta').select('*').order('created_at', {ascending:false})
+      .then(function(res){ posPacientes=res.data||[]; renderPosMsgs(); renderPosLista(); renderPosStats(); });
+  }
+  carregarPos();
+  sb.channel('pos-ch').on('postgres_changes',{event:'*',schema:'public',table:'pos_consulta'},function(){ carregarPos(); }).subscribe();
+}
+
+function setPosSeq(seq, btn){
+  posSeqAtiva = seq;
+  document.querySelectorAll('.pos-seq-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderPosMsgs();
+  renderPosLista();
+}
+
+function renderPosMsgs(){
+  var area = document.getElementById('pos-msgs-area');
+  if(!area) return;
+  var seqs = posSeqAtiva === 'todas' ? Object.keys(POS_MSGS) : [posSeqAtiva];
+  area.innerHTML = '';
+  seqs.forEach(function(seq){
+    var s = POS_MSGS[seq];
+    var html = '<div style="margin-bottom:14px;">';
+    html += '<div style="font-family:Arial,sans-serif;font-size:14px;font-weight:700;color:var(--verde-esc);margin-bottom:8px;">'+esc(s.label)+'</div>';
+    s.msgs.forEach(function(m){
+      var progTag = m.prog==='todos'?'Todos os programas':m.prog==='esa'?'ESA':m.prog==='rh'?'Reposição Hormonal':'Lipedema Scan';
+      html += '<div style="background:#f2faf8;border-left:3.5px solid var(--ouro);padding:9px 13px;border-radius:0 8px 8px 0;margin-bottom:8px;">';
+      html += '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4a9080;margin-bottom:5px;">'+esc(progTag)+'</div>';
+      html += '<div style="font-size:13px;line-height:1.7;color:#1e3530;font-style:italic;">'+esc(m.msg)+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    area.innerHTML += html;
+  });
+}
+
+function renderPosStats(){
+  document.getElementById('ps-total').textContent = posPacientes.length;
+  document.getElementById('ps-7d').textContent = posPacientes.filter(function(p){return p.seq==='7d';}).length;
+  document.getElementById('ps-30d').textContent = posPacientes.filter(function(p){return p.seq==='30d';}).length;
+  document.getElementById('ps-reativ').textContent = posPacientes.filter(function(p){return p.seq==='reativ';}).length;
+}
+
+function abrirPosForm(){document.getElementById('pos-form-wrap').classList.add('open');document.getElementById('pf-nome').focus();}
+function fecharPosForm(){document.getElementById('pos-form-wrap').classList.remove('open');['pf-nome','pf-fone','pf-data','pf-obs'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});}
+
+function salvarPosPaciente(){
+  var nome=document.getElementById('pf-nome').value.trim();
+  if(!nome){alert('Informe o nome do paciente.');return;}
+  var dataConsulta=document.getElementById('pf-data').value;
+  var prog=document.getElementById('pf-prog').value;
+  var pN={esa:'ESA',rh:'Reposição Hormonal',lip:'Lipedema Scan'};
+  var n=new Date();
+  sb.from('pos_consulta').insert([{
+    nome:nome, fone:document.getElementById('pf-fone').value.trim(),
+    data_consulta:dataConsulta, prog:prog, prog_nome:pN[prog],
+    obs:document.getElementById('pf-obs').value.trim(),
+    seq:'7d',
+    criado_por:currentUser?currentUser.email:'—'
+  }]).then(function(){ fecharPosForm(); });
+}
+
+function removerPosPaciente(id){
+  if(!confirm('Remover este paciente do acompanhamento?')) return;
+  sb.from('pos_consulta').delete().eq('id', id);
+}
+
+function atualizarPosSeq(id, seq){
+  sb.from('pos_consulta').update({seq:seq}).eq('id', id);
+}
+
+function renderPosLista(){
+  var lista=document.getElementById('pos-lista');
+  if(!lista) return;
+  lista.querySelectorAll('.pos-card').forEach(function(el){el.remove();});
+  var pacs = posSeqAtiva==='todas' ? posPacientes : posPacientes.filter(function(p){return p.seq===posSeqAtiva;});
+  document.getElementById('pos-vazio').style.display = pacs.length===0?'block':'none';
+  var pC={esa:'ct-esa',rh:'ct-rh',lip:'ct-lip'};
+  var seqTags={
+    '7d':'<span class="pos-seq-tag ps-7d">7 dias</span>',
+    '30d':'<span class="pos-seq-tag ps-30d">30 dias</span>',
+    '60d':'<span class="pos-seq-tag" style="background:#fff3dc;color:#7a5008;border:1px solid #e8cf90;">60 dias</span>',
+    'reativ':'<span class="pos-seq-tag ps-reativ">Reativação</span>'
+  };
+  pacs.forEach(function(p){
+    var card=document.createElement('div'); card.className='pos-card';
+    card.innerHTML=
+      '<div class="pos-card-hd">'+
+        '<div>'+
+          '<div class="c-nome">'+esc(p.nome||'')+'</div>'+
+          '<div class="c-tags">'+
+            '<span class="ctag '+(pC[p.prog]||'ct-dia')+'">'+esc(p.progNome||'')+'</span>'+
+            (seqTags[p.seq]||'')+
+            (p.dataConsulta?'<span class="ctag ct-hora">Consulta: '+esc(p.dataConsulta)+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<button class="btn-rem" data-id="'+p.id+'" onclick="removerPosPaciente(this.dataset.id)">✕</button>'+
+      '</div>'+
+      '<div class="c-card-bd" style="padding:10px 16px;">'+
+        (p.obs?'<div style="font-size:12px;color:#1e3530;background:#f2faf8;padding:7px 10px;border-radius:7px;border-left:3px solid var(--ouro);margin-bottom:10px;">'+esc(p.obs)+'</div>':'')+
+        '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3d6b63;margin-bottom:5px;">Mover para sequência</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
+          '<button data-id="'+p.id+'" data-seq="7d" onclick="atualizarPosSeq(this.dataset.id,this.dataset.seq)" class="pos-seq-tag ps-7d" style="cursor:pointer;padding:4px 10px;">7 dias</button>'+
+          '<button data-id="'+p.id+'" data-seq="30d" onclick="atualizarPosSeq(this.dataset.id,this.dataset.seq)" class="pos-seq-tag ps-30d" style="cursor:pointer;padding:4px 10px;">30 dias</button>'+
+          '<button data-id="'+p.id+'" data-seq="60d" onclick="atualizarPosSeq(this.dataset.id,this.dataset.seq)" class="pos-seq-tag" style="cursor:pointer;padding:4px 10px;background:#fff3dc;color:#7a5008;border:1px solid #e8cf90;">60 dias</button>'+
+          '<button data-id="'+p.id+'" data-seq="reativ" onclick="atualizarPosSeq(this.dataset.id,this.dataset.seq)" class="pos-seq-tag ps-reativ" style="cursor:pointer;padding:4px 10px;">Reativação</button>'+
+        '</div>'+
+      '</div>';
+    lista.appendChild(card);
+  });
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Drag & drop vídeos
+document.addEventListener('DOMContentLoaded',function(){
+  var ua=document.getElementById('up-area');
+  if(ua){
+    ua.addEventListener('dragover',function(e){e.preventDefault();ua.classList.add('drag');});
+    ua.addEventListener('dragleave',function(){ua.classList.remove('drag');});
+    ua.addEventListener('drop',function(e){e.preventDefault();ua.classList.remove('drag');handleUpload(e.dataTransfer.files);});
+  }
+});
+</script>
+</body>
+</html>
